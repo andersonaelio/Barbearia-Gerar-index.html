@@ -311,11 +311,22 @@ function BarbeariaOS() {
         ::-webkit-scrollbar{height:8px;width:8px}
         ::-webkit-scrollbar-thumb{background:${C.line};border-radius:8px}
         button{font-family:${SANS}}
+        /* ── responsividade mobile · Phosphoros ── */
+        html,body{overflow-x:hidden;max-width:100%}
+        @media (max-width:760px){
+          .rg{grid-template-columns:1fr !important}
+          .rwrap{padding-left:16px !important;padding-right:16px !important}
+          .rtopbar{flex-wrap:wrap !important;row-gap:12px !important}
+          .rtopright{width:100% !important;justify-content:space-between !important;flex-wrap:wrap !important;gap:8px !important}
+          .rwrapflex{flex-wrap:wrap !important}
+          .rtitle{font-size:26px !important}
+          .rbignum{font-size:32px !important}
+        }
       `}</style>
 
       {/* TOP BAR */}
       <div style={{ background: "#101014", color: "#F3F1EC", borderBottom: `1px solid ${C.line}` }}>
-        <div style={{ borderBottom: `1px solid rgba(255,255,255,.12)`, maxWidth: 1040, margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div className="rwrap rtopbar" style={{ borderBottom: `1px solid rgba(255,255,255,.12)`, maxWidth: 1040, margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div onClick={() => setScreen("hoje")} style={{ display: "flex", alignItems: "center", gap: 13, cursor: "pointer" }}>
             <div style={{ width: 42, height: 42 }}><GerarMark size={42} /></div>
             <div>
@@ -325,7 +336,7 @@ function BarbeariaOS() {
               <div style={{ fontSize: 9.5, color: "rgba(243,233,214,.6)", letterSpacing: 2.5, textTransform: "uppercase", marginTop: 3 }}>Barbearia · Tapera</div>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "rgba(243,233,214,.75)" }}>
+          <div className="rtopright" style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "rgba(243,233,214,.75)" }}>
             {/* seletor de papel (demo) */}
             <div style={{ display: "flex", background: "rgba(255,255,255,.06)", border: `1px solid ${C.line}`, borderRadius: 8, padding: 3, gap: 2 }}>
               {[["dono", "Dono"], ["barbeiro", "Barbeiro"]].map(([r, label]) => (
@@ -359,7 +370,7 @@ function BarbeariaOS() {
         </div>
       )}
 
-      <div style={{ maxWidth: 1040, margin: "0 auto", padding: "30px 24px 90px" }}>
+      <div className="rwrap" style={{ maxWidth: 1040, margin: "0 auto", padding: "30px 24px 90px" }}>
         {screen === "hoje" && <Hoje appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} sales={sales} products={products} returns={returns} goTo={setScreen} />}
         {screen === "painel" && role === "dono" && <Painel />}
         {screen === "agenda" && <Agenda appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} barbers={initialBarbers} assignBarber={assignBarber} />}
@@ -393,7 +404,7 @@ function FlowRail({ screen, setScreen, criticalCount, returns, role, unassignedC
   const steps = STEPS.filter((s) => role === "dono" || s.key !== "financeiro");
   return (
     <div style={{ background: C.card, borderBottom: `1px solid ${C.line}` }}>
-      <div style={{ maxWidth: 1040, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "stretch", overflowX: "auto" }}>
+      <div className="rwrap" style={{ maxWidth: 1040, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "stretch", overflowX: "auto" }}>
         {steps.map((s, i) => {
           const Icon = s.icon;
           const activeS = screen === s.key;
@@ -423,7 +434,7 @@ function SectionTitle({ kicker, title, right, kickerColor = C.brass, barColor = 
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24, gap: 16, flexWrap: "wrap" }}>
       <div>
         <div style={{ color: kickerColor, fontSize: 10.5, letterSpacing: 3.5, textTransform: "uppercase", fontWeight: 600 }}>{kicker}</div>
-        <h2 style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 36, margin: "6px 0 0", color: C.ink, lineHeight: 1 }}>{title}</h2>
+        <h2 className="rtitle" style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 36, margin: "6px 0 0", color: C.ink, lineHeight: 1 }}>{title}</h2>
         <div style={{ width: 46, height: 3, background: barColor, marginTop: 12 }} />
       </div>
       {right}
@@ -549,7 +560,7 @@ function Checkout({ active, cart, suggestions, refused, services, addProduct, ad
   return (
     <div className="bb-pulse">
       <SectionTitle kicker={`Atendimento · ${active.client} · com ${b.name}`} title="Checkout" />
-      <div style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gap: 20 }}>
+      <div className="rg" style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gap: 20 }}>
         <div>
           <div style={{ background: C.card, border: `1px solid ${C.brass}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20, marginBottom: 18, position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.brass}, ${C.brassL})` }} />
@@ -644,7 +655,7 @@ function Estoque({ products, goManage }) {
               border: "1px solid #343743", borderTopColor: "rgba(150,180,230,.16)",
               borderRadius: 14, padding: "16px 20px",
               boxShadow: "0 16px 34px -14px rgba(0,0,0,.9)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14 }}>
+              <div className="rwrapflex" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14 }}>
                 <div>
                   <div style={{ fontSize: 15.5, color: C.ink, display: "flex", alignItems: "center", gap: 9, fontWeight: 600, fontFamily: SERIF }}>
                     {p.name}
@@ -675,12 +686,12 @@ function Financeiro({ fin, sales, expenses }) {
   return (
     <div className="bb-pulse">
       <SectionTitle kicker="Fechamento de caixa · hoje" title="Financeiro diário" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 24 }}>
+      <div className="rg" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 24 }}>
         <Kpi label="Entradas" value={money(fin.entradas)} color={C.olive} icon={TrendingUp} sub={`${sales.length} venda(s)`} />
         <Kpi label="Saídas" value={money(fin.saidas)} color={C.brick} icon={DollarSign} sub="comissões + despesas" />
         <Kpi label="Saldo do dia" value={money(fin.saldo)} color={C.ox} icon={Wallet} sub={fin.saldo >= 0 ? "no azul" : "no vermelho"} highlight />
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div className="rg" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <Panel title="Por serviço / produto">
           {Object.keys(fin.porServico).length === 0 && Object.keys(fin.porProduto).length === 0
             ? <Muted>Finalize uma venda no checkout para ver os números aqui.</Muted>
@@ -772,14 +783,14 @@ function Hoje({ appointments, barberOf, serviceOf, startService, sales, products
     <div className="bb-pulse">
       <div style={{ marginBottom: 20 }}>
         <div style={{ color: C.brass, fontSize: 11, letterSpacing: 3.5, textTransform: "uppercase", fontWeight: 600 }}>Terça, 02 de junho</div>
-        <h2 style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 33, margin: "6px 0 0", color: C.ink, lineHeight: 1 }}>Bom dia, Barbearia Gerar</h2>
+        <h2 className="rtitle" style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 33, margin: "6px 0 0", color: C.ink, lineHeight: 1 }}>Bom dia, Barbearia Gerar</h2>
       </div>
 
       <div style={{ background: C.oxDark, color: "#F3F1EC", borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "22px 24px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.brass}, ${C.brassL})` }} />
         <div>
           <div style={{ fontSize: 11, letterSpacing: 2.5, textTransform: "uppercase", color: C.brassL, fontWeight: 600 }}>Faturamento de hoje</div>
-          <div style={{ fontFamily: MONO, fontWeight: 600, fontSize: 44, lineHeight: 1.15 }}>{money(fatur)}</div>
+          <div className="rbignum" style={{ fontFamily: MONO, fontWeight: 600, fontSize: 44, lineHeight: 1.15 }}>{money(fatur)}</div>
           <div style={{ fontSize: 12.5, color: "rgba(245,234,215,.7)" }}>meta do dia {money(META)}</div>
         </div>
         <div style={{ textAlign: "center" }}>
@@ -788,7 +799,7 @@ function Hoje({ appointments, barberOf, serviceOf, startService, sales, products
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+      <div className="rg" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
         <Tile onClick={() => goTo("whatsapp")} icon={MessageCircle} label="Clientes para retorno" value={returns.length} color={C.olive} />
         <Tile onClick={() => goTo("estoque")} icon={Package} label="Produtos acabando" value={acabando} color={acabando ? C.brick : C.inkSoft} alert={acabando > 0} />
       </div>
@@ -858,7 +869,7 @@ function Painel() {
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.brass}, ${C.brassL})` }} />
         <div style={{ fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color: C.brassL, fontWeight: 600 }}>As sugestões geraram, de verdade</div>
         <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 10, flexWrap: "wrap" }}>
-          <span style={{ fontFamily: MONO, fontWeight: 600, fontSize: 46, lineHeight: 1 }}>{money(SEED.receitaProdutoSugerido)}</span>
+          <span className="rbignum" style={{ fontFamily: MONO, fontWeight: 600, fontSize: 46, lineHeight: 1 }}>{money(SEED.receitaProdutoSugerido)}</span>
           <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 22, color: C.brassL }}>+{upliftPct}% sobre o faturamento de serviços</span>
         </div>
         <div style={{ fontSize: 12.5, color: "rgba(245,234,215,.7)", marginTop: 12, maxWidth: 560 }}>
@@ -868,7 +879,7 @@ function Painel() {
 
       <Divulgar />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+      <div className="rg" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
         <Panel title="Ticket médio: o efeito da sugestão">
           <BarRow label="Atendimento só com serviço" value={SEED.ticketSemProduto} max={SEED.ticketComProduto} caption={money(SEED.ticketSemProduto)} color={C.line} />
           <BarRow label="Com produto sugerido aceito" value={SEED.ticketComProduto} max={SEED.ticketComProduto} caption={money(SEED.ticketComProduto)} color={C.olive} />
@@ -894,7 +905,7 @@ function Painel() {
         </Panel>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div className="rg" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <Panel title="Quem mais vende na sugestão">
           {SEED.barbeiros.map((b) => {
             const c = Math.round((b.vendeu / b.ofertou) * 100);
@@ -1135,13 +1146,13 @@ function EditForm({ draft, field, save, cancel, title }) {
   return (
     <div style={{ background: C.card, border: `1px solid ${C.brass}`, borderTop: `3px solid ${C.brass}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20, marginBottom: 12 }}>
       <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 17, color: C.ink, marginBottom: 16 }}>{title}</div>
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
+      <div className="rg" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
         {field("Nome", "name")}
         {field("Preço (R$)", "price", { type: "number", ph: "0,00" })}
         {field("Custo (R$)", "cost", { type: "number" })}
         {field("Estoque mín.", "min", { type: "number" })}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 12, marginBottom: 18 }}>
+      <div className="rg" style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 12, marginBottom: 18 }}>
         {field("Estoque atual", "stock", { type: "number", ph: "ex: 25" })}
         {field("Fornecedor", "supplier")}
       </div>
