@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Barbearia Gerar · Painel</title>
+<style>html,body{margin:0;padding:0}#root{min-height:100vh;font-family:sans-serif}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+</head>
+<body>
+<div id="root">Carregando…</div>
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+function I({size=16,color="currentColor",strokeWidth=2,style,children}){
+  return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={style}>{children}</svg>;
+}
+const Scissors=(p)=><I {...p}><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></I>;
+const Calendar=(p)=><I {...p}><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="3" x2="21" y1="10" y2="10"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="16" x2="16" y1="2" y2="6"/></I>;
+const ShoppingBag=(p)=><I {...p}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></I>;
+const Package=(p)=><I {...p}><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></I>;
+const Wallet=(p)=><I {...p}><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></I>;
+const MessageCircle=(p)=><I {...p}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></I>;
+const Check=(p)=><I {...p}><path d="M20 6 9 17l-5-5"/></I>;
+const X=(p)=><I {...p}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></I>;
+const Plus=(p)=><I {...p}><path d="M5 12h14"/><path d="M12 5v14"/></I>;
+const ArrowRight=(p)=><I {...p}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></I>;
+const AlertTriangle=(p)=><I {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></I>;
+const Phone=(p)=><I {...p}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></I>;
+const Clock=(p)=><I {...p}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></I>;
+const TrendingUp=(p)=><I {...p}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></I>;
+const User=(p)=><I {...p}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></I>;
+const Sparkles=(p)=><I {...p}><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/></I>;
+const ChevronRight=(p)=><I {...p}><path d="m9 18 6-6-6-6"/></I>;
+const Send=(p)=><I {...p}><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></I>;
+const RotateCcw=(p)=><I {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></I>;
+const DollarSign=(p)=><I {...p}><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></I>;
+const Pencil=(p)=><I {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></I>;
+const Save=(p)=><I {...p}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></I>;
+const ArrowLeft=(p)=><I {...p}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></I>;
+const BarChart3=(p)=><I {...p}><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></I>;
+const Target=(p)=><I {...p}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></I>;
+const Award=(p)=><I {...p}><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></I>;
+const Copy=(p)=><I {...p}><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></I>;
+const Download=(p)=><I {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></I>;
+const QrCode=(p)=><I {...p}><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></I>;
+const Sun=(p)=><I {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></I>;
+const CalendarClock=(p)=><I {...p}><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><circle cx="16" cy="16" r="6"/><path d="M16 14v2l1 1"/></I>;
+
+
+// ───────────────────────────────────────────────────────────
+// BarbeariaOS — protótipo do fluxo conectado (dados mockados)
+// Estética: editorial de barbearia premium · papel + oxblood + latão
+// ───────────────────────────────────────────────────────────
+
+const FONT = `
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,600&family=Work+Sans:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap');
+`;
+
+const C = {
+  paper: "#15151A",
+  paper2: "#2A2E3A",
+  card: "#23252F",
+  ink: "#F3F1EC",
+  inkSoft: "#9A9AA6",
+  line: "#343A47",
+  lineSoft: "#262A33",
+  ox: "#2C72D8",
+  oxDark: "#101014",
+  brass: "#2C72D8",
+  brassL: "#5A93E4",
+  olive: "#4BC78E",
+  brick: "#2C72D8",
+};
+
+const SANS = "'Work Sans', sans-serif";
+const SERIF = "'Playfair Display', serif";
+const MONO = "'Courier Prime', monospace";
+const GERAR_RED = "#E5352B"; // vermelho da logo — usado SÓ como alerta de "sem barbeiro"
+const AMBER = "#E0A33E"; // âmbar — atenção (estoque baixo), sem roubar o sentido do vermelho
+
+const initialBarbers = [
+  { id: "b1", name: "Giovani Roque", commission: 0.45 },
+  { id: "b2", name: "Pedro Henrique", commission: 0.4 },
+  { id: "b3", name: "Bryan Roger", commission: 0.4 },
+  { id: "b4", name: "Cássio Miranda", commission: 0.45 },
+  { id: "b5", name: "Juliano Pastro", commission: 0.4 },
+];
+
+const initialServices = [
+  { id: "s1", name: "Degradê", price: 45 },
+  { id: "s2", name: "Social", price: 40 },
+  { id: "s3", name: "Corte na tesoura", price: 45 },
+  { id: "s4", name: "Corte máquina", price: 30 },
+  { id: "s5", name: "Barba", price: 35 },
+  { id: "s6", name: "Sobrancelha", price: 10 },
+  { id: "s7", name: "Degradê + Barba + Sobra.", price: 75 },
+];
+
+const initialProducts = [
+  { id: "p1", name: "Pomada Modeladora", price: 30, cost: 14, stock: 4, min: 5, supplier: "Distribuidora Norte", supplierPhone: "5548999990001" },
+  { id: "p2", name: "Óleo para Barba", price: 40, cost: 20, stock: 7, min: 4, supplier: "BeardCo", supplierPhone: "5548999990002" },
+  { id: "p3", name: "Shampoo Barba e Cabelo", price: 32, cost: 15, stock: 2, min: 6, supplier: "Distribuidora Norte", supplierPhone: "5548999990001" },
+  { id: "p4", name: "Pomada Matte", price: 35, cost: 17, stock: 12, min: 3, supplier: "BeardCo", supplierPhone: "5548999990002" },
+];
+
+const initialAppointments = [
+  { id: "a1", client: "João Mendes", phone: "5548988880001", barberId: "b1", serviceId: "s7", time: "14:00", lastVisitDays: 35, status: "waiting" },
+  { id: "a2", client: "Pedro Alves", phone: "5548988880002", barberId: "b2", serviceId: "s1", time: "14:30", lastVisitDays: 21, status: "waiting" },
+  { id: "a3", client: "Marcos Dias", phone: "5548988880003", barberId: "b4", serviceId: "s5", time: "15:00", lastVisitDays: 12, status: "waiting" },
+  { id: "a4", client: "Rodrigo Pinto", phone: "5548988880004", barberId: null, serviceId: "s1", time: "15:30", lastVisitDays: 0, status: "waiting" },
+  { id: "a5", client: "Tiago Nunes", phone: "5548988880005", barberId: null, serviceId: "s7", time: "16:00", lastVisitDays: 0, status: "waiting" },
+];
+
+const initialReturns = [
+  { id: "r1", client: "Carlos Souza", phone: "5548977770001", lastVisitDays: 41, suggestedEvery: 30, preferred: "Degradê + Barba + Sobra." },
+  { id: "r2", client: "André Lima", phone: "5548977770002", lastVisitDays: 58, suggestedEvery: 30, preferred: "Degradê" },
+];
+
+const money = (v) => "R$ " + v.toFixed(2).replace(".", ",");
+
+const STEPS = [
+  { key: "agenda", label: "Agenda", icon: Calendar },
+  { key: "checkout", label: "Checkout", icon: ShoppingBag },
+  { key: "estoque", label: "Estoque", icon: Package },
+  { key: "financeiro", label: "Financeiro", icon: Wallet },
+  { key: "whatsapp", label: "Retorno", icon: MessageCircle },
+];
+
+function GerarMark({ size = 40 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 1024 1024" fill="none" style={{ display: "block" }}>
+      <g transform="translate(0,1024) scale(0.1,-0.1)">
+        <g fill="#ffffff"><path d="M6320 8524 c-181 -83 -259 -299 -173 -474 59 -119 143 -172 285 -178
+113 -5 174 16 251 87 134 123 140 358 14 490 -96 100 -255 132 -377 75z"/>
+<path d="M4774 8306 c-597 -142 -965 -693 -879 -1316 66 -474 416 -867 878
+-988 150 -40 472 -40 617 0 548 149 891 664 839 1260 -39 455 -298 817 -709
+990 -141 59 -206 70 -435 74 -194 3 -218 2 -311 -20z m361 -140 c134 -41 229
+-155 290 -349 204 -644 72 -1544 -243 -1651 -220 -75 -419 120 -506 497 -47
+201 -51 241 -51 527 0 302 9 385 67 590 82 294 253 443 443 386z"/>
+<path d="M5755 3030 c-4 -6 9 -28 29 -50 261 -289 200 -761 -130 -996 -270
+-193 -785 -205 -1074 -26 -226 140 -347 346 -421 712 -45 227 -154 335 -339
+335 -106 0 -151 -16 -213 -74 -84 -79 -102 -125 -102 -266 0 -115 2 -123 37
+-208 117 -281 315 -477 638 -631 262 -125 526 -179 860 -178 442 2 744 104
+966 326 155 155 215 280 222 462 7 188 -37 293 -178 428 -106 100 -276 196
+-295 166z"/></g>
+        <g fill="#2C72D8"><path d="M3819 4933 c-120 -125 -208 -272 -250 -418 -34 -116 -34 -346 0 -455
+76 -248 264 -451 548 -594 256 -128 426 -172 1053 -276 241 -40 431 -84 487
+-113 15 -8 62 -25 103 -38 81 -26 203 -92 257 -140 19 -16 38 -29 43 -29 5 0
+21 -17 35 -37 14 -21 39 -58 56 -83 120 -181 106 -440 -37 -652 -42 -61 -169
+-198 -184 -198 -4 0 -19 -11 -33 -24 -15 -14 -37 -31 -51 -38 -13 -7 -42 -23
+-65 -36 -23 -12 -39 -27 -36 -32 11 -18 51 -11 89 15 20 14 39 25 42 25 3 0
+22 8 42 17 172 79 416 323 511 511 216 425 106 1002 -241 1270 -254 196 -589
+300 -1328 412 -179 27 -228 36 -345 60 -233 50 -369 153 -404 306 -28 117 83
+265 229 305 94 26 90 52 -15 83 -84 26 -354 161 -390 197 -41 39 -41 39 -116
+-38z"/></g>
+        <g fill="#E5352B"><path d="M3896 6444 c-241 -241 -324 -409 -334 -677 -9 -257 59 -449 225 -641
+112 -128 303 -262 453 -316 19 -7 49 -18 65 -25 27 -12 51 -20 160 -55 110
+-34 311 -78 545 -119 642 -112 841 -163 921 -238 192 -180 171 -423 -46 -525
+-50 -23 -59 -37 -33 -49 7 -4 51 -25 98 -47 114 -54 227 -129 297 -197 31 -30
+60 -55 63 -55 24 0 173 196 222 295 212 418 106 897 -262 1189 -178 142 -317
+207 -670 310 -30 9 -82 21 -115 27 -33 6 -78 15 -100 19 -22 4 -67 13 -100 20
+-33 6 -80 15 -105 20 -25 4 -85 15 -135 24 -49 9 -108 20 -130 25 -22 5 -67
+15 -100 21 -214 41 -398 91 -506 137 -102 43 -107 47 -142 101 -112 174 -42
+347 170 422 47 16 63 27 63 41 0 18 -47 69 -63 69 -17 0 -217 208 -247 258
+-30 49 -55 72 -78 72 -6 0 -58 -48 -116 -106z"/></g>
+      </g>
+    </svg>
+  );
+}
+
+function PhosphorosMark({ size = 24, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="20 4 80 132" fill="none" style={{ display: "block" }}>
+      <path d="M28 40 Q60 14 92 40 Q60 66 28 40 Z" stroke={color} strokeWidth="6" strokeLinejoin="round" />
+      <circle cx="60" cy="40" r="10" fill={color} />
+      <rect x="32" y="84" width="56" height="9" rx="4.5" fill={color} />
+      <rect x="32" y="101" width="56" height="9" rx="4.5" fill={color} />
+      <rect x="32" y="118" width="56" height="9" rx="4.5" fill={color} />
+    </svg>
+  );
+}
+
+function BarbeariaOS() {
+  const [screen, setScreen] = useState("hoje");
+  const [role, setRole] = useState("dono"); // "dono" vê tudo · "barbeiro" não vê Painel nem Financeiro
+  const setRoleSafe = (r) => { setRole(r); if (r === "barbeiro" && (screen === "painel" || screen === "financeiro")) setScreen("hoje"); };
+  const [products, setProducts] = useState(initialProducts);
+  const [appointments, setAppointments] = useState(initialAppointments);
+  const [returns, setReturns] = useState(initialReturns);
+
+  const [active, setActive] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [refused, setRefused] = useState([]);
+
+  const [sales, setSales] = useState([]);
+  const [expenses] = useState([{ id: "e1", label: "Produtos de limpeza", value: 60 }]);
+  const [pulse, setPulse] = useState([]);
+  const [movements, setMovements] = useState([]);
+
+  // registra um movimento de estoque e ajusta o saldo (inventory_movements)
+  const applyMovement = (productId, type, qty, note) => {
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        let newStock = p.stock;
+        if (type === "ajuste") newStock = qty;        // contagem: valor absoluto
+        else if (type === "entrada") newStock = p.stock + qty; // reposição
+        else newStock = p.stock - qty;                 // perda / venda
+        return { ...p, stock: newStock };
+      })
+    );
+    setMovements((m) => [{ id: "mv" + Date.now() + Math.round(Math.random() * 999), productId, type, qty, note, seq: m.length + 1 }, ...m]);
+  };
+
+  const barberOf = (id) => initialBarbers.find((b) => b.id === id) || { id: null, name: "Sem preferência", commission: 0 };
+  const assignBarber = (id, barberId) => setAppointments((a) => a.map((x) => (x.id === id ? { ...x, barberId } : x)));
+  const unassignedCount = appointments.filter((a) => !a.barberId && a.status !== "done").length;
+  const serviceOf = (id) => initialServices.find((s) => s.id === id);
+
+  const startService = (appt) => {
+    const svc = serviceOf(appt.serviceId);
+    setActive(appt);
+    setCart([{ type: "service", id: svc.id, name: svc.name, price: svc.price }]);
+    setRefused([]);
+    setScreen("checkout");
+  };
+
+  const suggestions = useMemo(() => {
+    const inCart = new Set(cart.filter((i) => i.type === "product").map((i) => i.id));
+    return products
+      .filter((p) => !inCart.has(p.id) && !refused.includes(p.id) && p.stock > 0)
+      .slice(0, 3);
+  }, [products, cart, refused]);
+
+  const addProduct = (p) =>
+    setCart((c) => [...c, { type: "product", id: p.id, name: p.name, price: p.price, cost: p.cost }]);
+  const addService = (s) =>
+    setCart((c) => [...c, { type: "service", id: s.id, name: s.name, price: s.price }]);
+  const removeFromCart = (idx) => setCart((c) => c.filter((_, i) => i !== idx));
+  const refuse = (p) => setRefused((r) => [...r, p.id]);
+
+  const cartTotal = cart.reduce((a, i) => a + i.price, 0);
+  const productCount = cart.filter((i) => i.type === "product").length;
+
+  const finalizeSale = () => {
+    const barber = barberOf(active.barberId);
+    const serviceRevenue = cart.filter((i) => i.type === "service").reduce((a, i) => a + i.price, 0);
+    const commission = serviceRevenue * barber.commission;
+
+    const sale = {
+      id: "v" + (sales.length + 1),
+      client: active.client, barber: barber.name, barberId: barber.id,
+      items: cart, total: cartTotal, serviceRevenue, commission, time: active.time,
+    };
+
+    const soldProductIds = cart.filter((i) => i.type === "product").map((i) => i.id);
+    soldProductIds.forEach((id) => applyMovement(id, "venda", 1));
+
+    setSales((s) => [...s, sale]);
+    setAppointments((a) => a.map((x) => (x.id === active.id ? { ...x, status: "done" } : x)));
+    setReturns((r) => [
+      ...r,
+      { id: "ret-" + active.id, client: active.client, phone: active.phone, lastVisitDays: 0, suggestedEvery: 30, preferred: serviceOf(active.serviceId).name, justScheduled: true },
+    ]);
+
+    const negativeStock = soldProductIds
+      .map((id) => products.find((p) => p.id === id))
+      .filter((p) => p && p.stock - 1 < 0);
+
+    const chips = [];
+    chips.push(`Venda ${money(cartTotal)} registrada na comanda`);
+    if (soldProductIds.length) chips.push(`${soldProductIds.length} produto(s) baixado(s) no estoque`);
+    if (negativeStock.length) chips.push(`⚠ ${negativeStock[0].name} ficou negativo — confira o estoque`);
+    chips.push(`+${money(cartTotal)} no caixa · comissão de ${money(commission)} lançada`);
+    chips.push(`Retorno de ${active.client} agendado para +30 dias`);
+    setPulse(chips);
+
+    setActive({ ...active, finished: true, sale });
+    setCart([]);
+  };
+
+  const fin = useMemo(() => {
+    const entradas = sales.reduce((a, s) => a + s.total, 0);
+    const comissoes = sales.reduce((a, s) => a + s.commission, 0);
+    const saidasDesp = expenses.reduce((a, e) => a + e.value, 0);
+    const saidas = comissoes + saidasDesp;
+    const porServico = {}, porProduto = {};
+    sales.forEach((s) =>
+      s.items.forEach((i) => {
+        if (i.type === "service") porServico[i.name] = (porServico[i.name] || 0) + i.price;
+        else porProduto[i.name] = (porProduto[i.name] || 0) + i.price;
+      })
+    );
+    return { entradas, comissoes, saidasDesp, saidas, saldo: entradas - saidas, porServico, porProduto };
+  }, [sales, expenses]);
+
+  const criticalCount = products.filter((p) => p.stock <= p.min).length;
+
+  return (
+    <div style={{ background: "radial-gradient(1100px 720px at 50% -4%, #1E1E27 0%, #131318 52%, #0B0B0E 100%)", backgroundAttachment: "fixed", minHeight: "100vh", color: C.ink, fontFamily: SANS }}>
+      <style>{FONT}</style>
+      <style>{`
+        .bb-pulse { animation: bbpulse .5s cubic-bezier(.2,.7,.3,1) both; }
+        @keyframes bbpulse { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none} }
+        .bb-card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+        .bb-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -16px rgba(60,40,20,.5); border-color:${C.brass}; }
+        .bb-tab:hover { color:${C.ink} !important; }
+        ::-webkit-scrollbar{height:8px;width:8px}
+        ::-webkit-scrollbar-thumb{background:${C.line};border-radius:8px}
+        button{font-family:${SANS}}
+      `}</style>
+
+      {/* TOP BAR */}
+      <div style={{ background: "#101014", color: "#F3F1EC", borderBottom: `1px solid ${C.line}` }}>
+        <div style={{ borderBottom: `1px solid rgba(255,255,255,.12)`, maxWidth: 1040, margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div onClick={() => setScreen("hoje")} style={{ display: "flex", alignItems: "center", gap: 13, cursor: "pointer" }}>
+            <div style={{ width: 42, height: 42 }}><GerarMark size={42} /></div>
+            <div>
+              <div style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 23, letterSpacing: 0.3, lineHeight: 1 }}>
+                Barbearia Gerar
+              </div>
+              <div style={{ fontSize: 9.5, color: "rgba(243,233,214,.6)", letterSpacing: 2.5, textTransform: "uppercase", marginTop: 3 }}>Barbearia · Tapera</div>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "rgba(243,233,214,.75)" }}>
+            {/* seletor de papel (demo) */}
+            <div style={{ display: "flex", background: "rgba(255,255,255,.06)", border: `1px solid ${C.line}`, borderRadius: 8, padding: 3, gap: 2 }}>
+              {[["dono", "Dono"], ["barbeiro", "Barbeiro"]].map(([r, label]) => (
+                <button key={r} onClick={() => setRoleSafe(r)}
+                  style={{ background: role === r ? C.ox : "transparent", color: role === r ? "#fff" : "rgba(243,241,236,.7)", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setScreen("hoje")} style={{ display: "flex", alignItems: "center", gap: 6, background: screen === "hoje" ? "rgba(44,114,216,.22)" : "transparent", color: "#F3E9D6", border: `1px solid ${C.brassL}`, borderRadius: 7, padding: "7px 13px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+              <Sun size={14} /> Hoje
+            </button>
+            {role === "dono" && (
+              <button onClick={() => setScreen("painel")} style={{ display: "flex", alignItems: "center", gap: 6, background: screen === "painel" ? "rgba(44,114,216,.22)" : "transparent", color: "#F3E9D6", border: `1px solid ${C.brassL}`, borderRadius: 7, padding: "7px 13px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+                <BarChart3 size={14} /> Painel
+              </button>
+            )}
+            <div style={{ width: 30, height: 30, borderRadius: "50%", border: `1px solid ${C.brassL}`, display: "grid", placeItems: "center", color: C.brassL }}><User size={15} /></div>
+          </div>
+        </div>
+      </div>
+
+      <FlowRail screen={screen} setScreen={setScreen} criticalCount={criticalCount} returns={returns} role={role} unassignedCount={unassignedCount} />
+
+      {role === "barbeiro" && (
+        <div style={{ maxWidth: 1040, margin: "0 auto", padding: "12px 24px 0" }}>
+          <div style={{ background: "rgba(44,114,216,.10)", border: `1px solid ${C.brass}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "11px 15px", fontSize: 12.5, color: C.inkSoft, display: "flex", alignItems: "center", gap: 9 }}>
+            <User size={15} color={C.brassL} style={{ flexShrink: 0 }} />
+            <span>Visão do <b style={{ color: C.ink }}>barbeiro</b>: cada um vê só a própria agenda e comissão. O Painel comparativo e o Financeiro ficam só com o dono.</span>
+          </div>
+        </div>
+      )}
+
+      <div style={{ maxWidth: 1040, margin: "0 auto", padding: "30px 24px 90px" }}>
+        {screen === "hoje" && <Hoje appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} sales={sales} products={products} returns={returns} goTo={setScreen} />}
+        {screen === "painel" && role === "dono" && <Painel />}
+        {screen === "agenda" && <Agenda appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} barbers={initialBarbers} assignBarber={assignBarber} />}
+        {screen === "checkout" && (
+          <Checkout active={active} cart={cart} suggestions={suggestions} refused={refused}
+            services={initialServices} addProduct={addProduct} addService={addService}
+            removeFromCart={removeFromCart} refuse={refuse} cartTotal={cartTotal}
+            productCount={productCount} finalizeSale={finalizeSale} pulse={pulse}
+            goNext={() => setScreen("estoque")} barberOf={barberOf}
+            backToAgenda={() => { setActive(null); setPulse([]); setScreen("agenda"); }} />
+        )}
+        {screen === "estoque" && <Estoque products={products} goManage={() => setScreen("produtos")} />}
+        {screen === "produtos" && <Produtos products={products} setProducts={setProducts} movements={movements} applyMovement={applyMovement} back={() => setScreen("estoque")} />}
+        {screen === "financeiro" && role === "dono" && <Financeiro fin={fin} sales={sales} expenses={expenses} />}
+        {screen === "whatsapp" && <Whatsapp returns={returns} setReturns={setReturns} />}
+      </div>
+
+      <div style={{ maxWidth: 1040, margin: "0 auto", padding: "0 24px" }}>
+        <div style={{ borderTop: `1px solid ${C.lineSoft}`, padding: "16px 0 36px", textAlign: "center" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12.5, color: C.inkSoft }}>
+            <PhosphorosMark size={16} color={C.ox} /> feito com <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 600, color: C.ink }}>Phosphoros</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ───────────────────────────────────────────────────────────
+function FlowRail({ screen, setScreen, criticalCount, returns, role, unassignedCount }) {
+  const steps = STEPS.filter((s) => role === "dono" || s.key !== "financeiro");
+  return (
+    <div style={{ background: C.card, borderBottom: `1px solid ${C.line}` }}>
+      <div style={{ maxWidth: 1040, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "stretch", overflowX: "auto" }}>
+        {steps.map((s, i) => {
+          const Icon = s.icon;
+          const activeS = screen === s.key;
+          const badge = s.key === "agenda" && unassignedCount ? unassignedCount : s.key === "estoque" && criticalCount ? criticalCount : s.key === "whatsapp" ? returns.length : null;
+          const badgeColor = s.key === "agenda" ? GERAR_RED : s.key === "estoque" ? C.brick : C.olive;
+          return (
+            <React.Fragment key={s.key}>
+              <button className="bb-tab" onClick={() => setScreen(s.key)}
+                style={{ display: "flex", alignItems: "center", gap: 9, padding: "15px 18px", border: "none", background: "transparent", cursor: "pointer", whiteSpace: "nowrap",
+                  color: activeS ? C.ox : C.inkSoft, borderBottom: `2.5px solid ${activeS ? C.ox : "transparent"}`, fontSize: 13, fontWeight: activeS ? 600 : 500 }}>
+                <span style={{ fontFamily: MONO, fontSize: 11, color: activeS ? C.brass : C.line }}>0{i + 1}</span>
+                <Icon size={15} />
+                {s.label}
+                {badge ? <span style={{ background: badgeColor, color: "#fff", borderRadius: 20, fontSize: 10, padding: "1px 6px", fontFamily: MONO, minWidth: 16, textAlign: "center" }}>{badge}</span> : null}
+              </button>
+              {i < steps.length - 1 && <div style={{ display: "flex", alignItems: "center", color: C.line }}><ChevronRight size={13} /></div>}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function SectionTitle({ kicker, title, right, kickerColor = C.brass, barColor = C.ox }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24, gap: 16, flexWrap: "wrap" }}>
+      <div>
+        <div style={{ color: kickerColor, fontSize: 10.5, letterSpacing: 3.5, textTransform: "uppercase", fontWeight: 600 }}>{kicker}</div>
+        <h2 style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 36, margin: "6px 0 0", color: C.ink, lineHeight: 1 }}>{title}</h2>
+        <div style={{ width: 46, height: 3, background: barColor, marginTop: 12 }} />
+      </div>
+      {right}
+    </div>
+  );
+}
+
+function Agenda({ appointments, barberOf, serviceOf, startService, barbers, assignBarber }) {
+  const fila = appointments.filter((a) => !a.barberId && a.status !== "done");
+  const assigned = appointments.filter((a) => a.barberId);
+  return (
+    <div className="bb-pulse">
+      <SectionTitle kicker="Hoje · Ter, 02 Jun" title="Agenda do dia"
+        right={<div style={{ fontSize: 12.5, color: C.inkSoft, fontStyle: "italic", fontFamily: SERIF }}>Toque em um cliente para iniciar o atendimento →</div>} />
+
+      {/* Fila de disponíveis — sem barbeiro */}
+      <div style={{ marginBottom: 18, border: `1px solid ${fila.length ? GERAR_RED : C.line}`, background: fila.length ? "rgba(229,53,43,.07)" : C.card, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "15px 18px", transition: "all .2s" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ width: 26, height: 26, borderRadius: "50%", display: "grid", placeItems: "center", background: fila.length ? GERAR_RED : C.line, flexShrink: 0 }}>
+              <User size={15} color="#fff" />
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: fila.length ? GERAR_RED : C.inkSoft }}>
+              {fila.length ? `${fila.length} cliente${fila.length > 1 ? "s" : ""} esperando barbeiro` : "Ninguém esperando — tudo distribuído"}
+            </span>
+          </div>
+          {fila.length > 0 && <span style={{ fontSize: 10.5, color: GERAR_RED, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", border: `1px solid ${GERAR_RED}`, borderRadius: 20, padding: "3px 9px" }}>Sem barbeiro</span>}
+        </div>
+
+        {fila.map((a) => {
+          const s = serviceOf(a.serviceId);
+          return (
+            <div key={a.id} className="bb-pulse" style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "13px 15px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{ fontFamily: MONO, fontWeight: 600, fontSize: 19, color: C.ink }}>{a.time}</div>
+                <div style={{ width: 1, height: 32, background: C.line }} />
+                <div>
+                  <div style={{ fontSize: 15.5, color: C.ink, fontWeight: 600, fontFamily: SERIF }}>{a.client}</div>
+                  <div style={{ fontSize: 12, color: C.inkSoft, marginTop: 2 }}>{s.name} · {money(s.price)} · sem preferência</div>
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 11.5, color: C.inkSoft, marginRight: 2 }}>Eu atendo:</span>
+                {barbers.map((b) => (
+                  <button key={b.id} onClick={() => assignBarber(a.id, b.id)} title={b.name} className="bb-chip"
+                    style={{ width: 32, height: 32, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.paper, color: C.ink, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: SANS }}>
+                    {b.name[0]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Agenda já atribuída */}
+      <div style={{ display: "grid", gap: 12 }}>
+        {assigned.map((a) => {
+          const b = barberOf(a.barberId), s = serviceOf(a.serviceId);
+          const done = a.status === "done", late = a.lastVisitDays > 30;
+          return (
+            <div key={a.id} className="bb-card" onClick={() => !done && startService(a)}
+              style={{ background: C.card, border: `1px solid ${C.line}`, borderLeft: `3px solid ${done ? C.line : "#3C4250"}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", opacity: done ? 0.55 : 1, cursor: done ? "default" : "pointer" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                <div style={{ textAlign: "center", minWidth: 58 }}>
+                  <div style={{ fontFamily: MONO, fontWeight: 600, fontSize: 22, color: C.ox, lineHeight: 1 }}>{a.time}</div>
+                  <div style={{ fontSize: 9.5, color: C.inkSoft, display: "flex", alignItems: "center", gap: 3, justifyContent: "center", marginTop: 4, letterSpacing: 1 }}><Clock size={10} />HOJE</div>
+                </div>
+                <div style={{ width: 1, height: 40, background: C.line }} />
+                <div>
+                  <div style={{ fontSize: 16.5, color: C.ink, fontWeight: 600, fontFamily: SERIF }}>{a.client}</div>
+                  <div style={{ fontSize: 12.5, color: C.inkSoft, marginTop: 3 }}>{s.name} · {money(s.price)} · com {b.name}</div>
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                {late && !done && <span style={{ fontSize: 10.5, color: C.ox, border: `1px solid ${C.ox}`, borderRadius: 20, padding: "3px 10px", fontWeight: 500 }}>{a.lastVisitDays}d sem voltar</span>}
+                {done ? <span style={{ color: C.olive, fontSize: 12.5, display: "flex", alignItems: "center", gap: 5, fontWeight: 600 }}><Check size={15} />Finalizado</span>
+                  : <span style={{ color: C.ox, fontSize: 13, display: "flex", alignItems: "center", gap: 6, fontWeight: 600 }}>Atender <ArrowRight size={15} /></span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Checkout({ active, cart, suggestions, refused, services, addProduct, addService, removeFromCart, refuse, cartTotal, productCount, finalizeSale, pulse, goNext, barberOf, backToAgenda }) {
+  if (!active) return <Empty msg="Nenhum atendimento selecionado. Volte para a Agenda." />;
+  const finished = active.finished;
+  const b = barberOf(active.barberId);
+
+  if (finished) {
+    return (
+      <div className="bb-pulse">
+        <SectionTitle kicker="Venda concluída" title="Tudo conectado" />
+        <div style={{ background: C.card, border: `1px solid ${C.line}`, borderTop: `3px solid ${C.olive}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 24, marginBottom: 22 }}>
+          <div style={{ fontSize: 13.5, color: C.inkSoft, marginBottom: 16, fontFamily: SERIF, fontStyle: "italic" }}>
+            Veja o que uma única finalização disparou pelo sistema:
+          </div>
+          <div style={{ display: "grid", gap: 10 }}>
+            {pulse.map((p, i) => {
+              const warn = p.startsWith("⚠");
+              return (
+                <div key={i} className="bb-pulse" style={{ animationDelay: `${i * 0.12}s`, display: "flex", alignItems: "center", gap: 12, background: warn ? "rgba(230,170,80,.13)" : C.paper, borderRadius: 8, padding: "13px 15px", border: `1px solid ${warn ? C.brick : C.lineSoft}` }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: warn ? C.brick : C.olive, display: "grid", placeItems: "center", flexShrink: 0 }}>
+                    {warn ? <AlertTriangle size={12} color="#fff" /> : <Check size={13} color="#fff" />}
+                  </div>
+                  <span style={{ fontSize: 13.5, color: C.ink }}>{p.replace("⚠ ", "")}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <button onClick={goNext} style={btnPrimary}>Ver impacto no estoque <ArrowRight size={16} /></button>
+          <button onClick={backToAgenda} style={btnGhost}><RotateCcw size={15} /> Voltar à agenda</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bb-pulse">
+      <SectionTitle kicker={`Atendimento · ${active.client} · com ${b.name}`} title="Checkout" />
+      <div style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gap: 20 }}>
+        <div>
+          <div style={{ background: C.card, border: `1px solid ${C.brass}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20, marginBottom: 18, position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.brass}, ${C.brassL})` }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 4 }}>
+              <Sparkles size={18} color={C.brass} />
+              <span style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 19, color: C.ink }}>Que tal oferecer?</span>
+            </div>
+            <div style={{ fontSize: 12.5, color: C.inkSoft, marginBottom: 16 }}>Sugestões para aumentar o ticket. Um toque adiciona à venda.</div>
+            <div style={{ display: "grid", gap: 10 }}>
+              {suggestions.length === 0 && <div style={{ fontSize: 12.5, color: C.inkSoft }}>Sem mais sugestões.</div>}
+              {suggestions.map((p) => (
+                <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: C.paper, borderRadius: 8, padding: "12px 14px", border: `1px solid ${C.lineSoft}` }}>
+                  <div>
+                    <div style={{ fontSize: 14.5, color: C.ink, fontWeight: 500 }}>{p.name}</div>
+                    <div style={{ fontSize: 11.5, color: C.inkSoft, fontFamily: MONO, marginTop: 2 }}>{money(p.price)} · margem {money(p.price - p.cost)}</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
+                    <button onClick={() => addProduct(p)} style={{ ...chipBtn, borderColor: C.olive, color: C.olive, background: "rgba(75,199,142,.12)", fontWeight: 600 }}><Check size={14} /> Cliente quis</button>
+                    <button onClick={() => refuse(p)} style={{ ...chipBtn, borderColor: GERAR_RED, color: GERAR_RED, background: "rgba(229,53,43,.10)", fontWeight: 600 }}><X size={14} /> Não quis</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ fontSize: 10.5, letterSpacing: 2.5, textTransform: "uppercase", color: C.brass, marginBottom: 9, fontWeight: 600 }}>Adicionar serviço</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {services.map((s) => (
+              <button key={s.id} onClick={() => addService(s)} style={{ ...chipBtn, borderColor: C.line, color: C.ink, background: C.card }}>
+                <Plus size={13} /> {s.name} · {money(s.price)}
+              </button>
+            ))}
+          </div>
+          {refused.length > 0 && <div style={{ marginTop: 16, fontSize: 11.5, color: C.inkSoft, fontStyle: "italic" }}>Recusados (registrado para análise): {refused.length} produto(s)</div>}
+        </div>
+
+        <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20, alignSelf: "start", position: "sticky", top: 20 }}>
+          <div style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 19, color: C.ink, marginBottom: 4, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            Comanda <Scissors size={15} color={C.brass} />
+          </div>
+          <div style={{ borderTop: `1px solid ${C.line}`, margin: "10px 0 12px" }} />
+          <div style={{ display: "grid", gap: 9, marginBottom: 14 }}>
+            {cart.map((i, idx) => (
+              <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13.5 }}>
+                <span style={{ color: C.ink, display: "flex", alignItems: "center", gap: 7 }}>
+                  <span style={{ fontSize: 8.5, padding: "2px 5px", borderRadius: 4, fontFamily: MONO, fontWeight: 500, background: i.type === "product" ? "rgba(44,114,216,.16)" : C.paper, color: i.type === "product" ? C.brass : C.inkSoft }}>{i.type === "product" ? "PROD" : "SERV"}</span>
+                  {i.name}
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ color: C.ink, fontFamily: MONO }}>{money(i.price)}</span>
+                  <button onClick={() => removeFromCart(idx)} style={{ background: "none", border: "none", cursor: "pointer", color: C.inkSoft, display: "grid", placeItems: "center", padding: 0 }}><X size={13} /></button>
+                </span>
+              </div>
+            ))}
+          </div>
+          <div style={{ borderTop: `1px dashed ${C.line}`, paddingTop: 12 }}>
+            <Row k="Itens" v={`${cart.length} (${productCount} produto)`} muted />
+            <Row k="Comissão est." v={money(cart.filter(i => i.type === 'service').reduce((a, i) => a + i.price, 0) * b.commission)} muted />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "10px 0 16px" }}>
+            <span style={{ fontSize: 12.5, color: C.inkSoft, letterSpacing: 1, textTransform: "uppercase" }}>Total</span>
+            <span style={{ fontFamily: MONO, fontWeight: 600, fontSize: 30, color: C.ox }}>{money(cartTotal)}</span>
+          </div>
+          <button onClick={finalizeSale} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}><Check size={17} /> Finalizar venda</button>
+          <div style={{ fontSize: 10.5, color: C.inkSoft, textAlign: "center", marginTop: 11, fontStyle: "italic" }}>baixa estoque · lança no caixa · agenda retorno</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Estoque({ products, goManage }) {
+  const openWhats = (p) => {
+    const msg = encodeURIComponent(`Olá ${p.supplier}, preciso repor ${p.name}. Podem me passar disponibilidade e prazo?`);
+    window.open(`https://wa.me/${p.supplierPhone}?text=${msg}`, "_blank");
+  };
+  return (
+    <div className="bb-pulse">
+      <SectionTitle kicker="Atualizado em tempo real" title="Estoque inteligente" kickerColor={C.inkSoft} barColor="#44444F"
+        right={<button onClick={goManage} style={btnGhost}><Pencil size={14} /> Gerenciar produtos</button>} />
+      <div style={{ display: "grid", gap: 14 }}>
+        {products.map((p) => {
+          const lvl = p.stock <= p.min ? "low" : p.stock <= p.min * 2 ? "mid" : "full";
+          const critical = lvl === "low", neg = p.stock < 0;
+          const tag = lvl === "low" ? { cor: "#E5352B", txt: neg ? "negativo" : "acabando", bg: "rgba(229,53,43,.12)" }
+                    : lvl === "mid" ? { cor: "#E8B53A", txt: "pela metade", bg: "rgba(232,181,58,.12)" }
+                    : null;
+          const ratio = Math.max(0.05, Math.min(1, p.stock / (p.min * 2 || 1)));
+          return (
+            <div key={p.id} style={{
+              background: "linear-gradient(180deg, #23252F 0%, #181A22 100%)",
+              border: "1px solid #343743", borderTopColor: "rgba(150,180,230,.16)",
+              borderRadius: 14, padding: "16px 20px",
+              boxShadow: "0 16px 34px -14px rgba(0,0,0,.9)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14 }}>
+                <div>
+                  <div style={{ fontSize: 15.5, color: C.ink, display: "flex", alignItems: "center", gap: 9, fontWeight: 600, fontFamily: SERIF }}>
+                    {p.name}
+                    {tag && <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10.5, color: tag.cor, border: `1px solid ${tag.cor}`, borderRadius: 20, padding: "2px 9px", background: tag.bg }}><AlertTriangle size={11} /> {tag.txt}</span>}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 4 }}>Fornecedor: {p.supplier} · mínimo {p.min} un</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: 28, color: C.ink, lineHeight: 1 }}>{p.stock}</div>
+                    <div style={{ fontSize: 9.5, color: C.inkSoft, letterSpacing: 1, textTransform: "uppercase" }}>em estoque</div>
+                  </div>
+                  {critical && <button onClick={() => openWhats(p)} style={{ ...btnPrimary, padding: "9px 14px", fontSize: 12.5 }}><Phone size={13} /> Pedir reposição</button>}
+                </div>
+              </div>
+              <div style={{ height: 6, background: "rgba(120,150,200,.10)", borderRadius: 6, marginTop: 14, overflow: "hidden" }}>
+                <div style={{ width: `${ratio * 100}%`, height: "100%", background: "rgba(150,175,215,.55)", borderRadius: 6, transition: "width .4s" }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Financeiro({ fin, sales, expenses }) {
+  return (
+    <div className="bb-pulse">
+      <SectionTitle kicker="Fechamento de caixa · hoje" title="Financeiro diário" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 24 }}>
+        <Kpi label="Entradas" value={money(fin.entradas)} color={C.olive} icon={TrendingUp} sub={`${sales.length} venda(s)`} />
+        <Kpi label="Saídas" value={money(fin.saidas)} color={C.brick} icon={DollarSign} sub="comissões + despesas" />
+        <Kpi label="Saldo do dia" value={money(fin.saldo)} color={C.ox} icon={Wallet} sub={fin.saldo >= 0 ? "no azul" : "no vermelho"} highlight />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <Panel title="Por serviço / produto">
+          {Object.keys(fin.porServico).length === 0 && Object.keys(fin.porProduto).length === 0
+            ? <Muted>Finalize uma venda no checkout para ver os números aqui.</Muted>
+            : <>
+              {Object.entries(fin.porServico).map(([k, v]) => <Row key={k} k={k} v={money(v)} />)}
+              {Object.entries(fin.porProduto).map(([k, v]) => <Row key={k} k={k} v={money(v)} tag="produto" />)}
+            </>}
+        </Panel>
+        <Panel title="Saídas">
+          {sales.filter(s => s.commission > 0).map((s) => <Row key={s.id} k={`Comissão ${s.barber}`} v={money(s.commission)} />)}
+          {expenses.map((e) => <Row key={e.id} k={e.label} v={money(e.value)} />)}
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+function Whatsapp({ returns, setReturns }) {
+  const buildMsg = (r) =>
+    `Fala ${r.client.split(" ")[0]}! Aqui é da Barbearia Gerar. ` +
+    (r.lastVisitDays === 0
+      ? `Já deixei sua próxima visita sugerida pra daqui ~${r.suggestedEvery} dias. Quer que eu garanta seu horário?`
+      : `Notei que faz ${r.lastVisitDays} dias do seu último ${r.preferred.toLowerCase()}. Bora marcar seu horário essa semana?`);
+  const send = (r) => {
+    window.open(`https://wa.me/${r.phone}?text=${encodeURIComponent(buildMsg(r))}`, "_blank");
+    setReturns((prev) => prev.map((x) => (x.id === r.id ? { ...x, sent: true } : x)));
+  };
+  return (
+    <div className="bb-pulse">
+      <SectionTitle kicker="Modelo semi-automático · sem risco de ban" title="Retorno via WhatsApp"
+        right={<div style={{ fontSize: 12, color: C.inkSoft, maxWidth: 290, textAlign: "right", fontStyle: "italic", fontFamily: SERIF }}>O sistema monta a fila e escreve a mensagem. Você revisa e dispara.</div>} />
+      <div style={{ display: "grid", gap: 12 }}>
+        {returns.map((r) => (
+          <div key={r.id} style={{ background: C.card, border: `1px solid ${r.justScheduled ? C.brass : C.line}`, borderLeft: `3px solid ${r.lastVisitDays > 40 ? C.brick : C.brass}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "16px 20px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15.5, color: C.ink, display: "flex", alignItems: "center", gap: 9, fontWeight: 600, fontFamily: SERIF }}>
+                  {r.client}
+                  {r.justScheduled && <span style={{ fontSize: 10, color: C.brass, border: `1px solid ${C.brass}`, borderRadius: 20, padding: "2px 8px" }}>recém-atendido</span>}
+                  {r.lastVisitDays > 40 && <span style={{ fontSize: 10, color: C.brick, border: `1px solid ${C.brick}`, borderRadius: 20, padding: "2px 8px" }}>inativo {r.lastVisitDays}d</span>}
+                </div>
+                <div style={{ fontSize: 12.5, color: C.inkSoft, marginTop: 9, background: C.paper, borderRadius: 8, padding: "11px 13px", borderLeft: `2px solid ${C.olive}`, fontStyle: "italic" }}>"{buildMsg(r)}"</div>
+              </div>
+              <button onClick={() => send(r)} style={{ ...btnPrimary, opacity: r.sent ? 0.5 : 1 }}>{r.sent ? <><Check size={15} /> Enviado</> : <><Send size={15} /> Enviar</>}</button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 22, fontSize: 11.5, color: C.inkSoft, border: `1px dashed ${C.line}`, borderRadius: 8, padding: "13px 15px", background: C.card }}>
+        Upsell futuro: plano Pro com a API oficial da Meta dispara essa fila 100% sozinha. O MVP valida que o retorno funciona antes de pagar por isso.
+      </div>
+    </div>
+  );
+}
+
+// ─── PAINEL DE TICKET (dados de exemplo · 30 dias) ───
+const SEED = {
+  atendimentos: 214,
+  ofertas: 176,
+  aceitas: 57,
+  ticketSemProduto: 52,
+  ticketComProduto: 92,
+  receitaServicos: 11130,
+  receitaProdutoSugerido: 2280,
+  barbeiros: [
+    { nome: "Giovani", ofertou: 64, vendeu: 30 },
+    { nome: "Pedro", ofertou: 58, vendeu: 22 },
+    { nome: "Bryan", ofertou: 54, vendeu: 18 },
+    { nome: "Cássio", ofertou: 49, vendeu: 16 },
+    { nome: "Juliano", ofertou: 44, vendeu: 11 },
+  ],
+  produtos: [
+    { nome: "Pomada Modeladora", ofertou: 70, vendeu: 31 },
+    { nome: "Óleo para Barba", ofertou: 48, vendeu: 14 },
+    { nome: "Minoxidil Kit", ofertou: 18, vendeu: 4 },
+    { nome: "Shampoo Anticaspa", ofertou: 40, vendeu: 8 },
+  ],
+};
+
+// ─── TELA HOJE (casa do app · resumo de 5 segundos, tudo tocável) ───
+function Hoje({ appointments, barberOf, serviceOf, startService, sales, products, returns, goTo }) {
+  const FATUR_BASE = 420, META = 500;
+  const fatur = FATUR_BASE + sales.reduce((a, s) => a + s.total, 0);
+  const metaPct = Math.round((fatur / META) * 100);
+  const proximos = appointments.filter((a) => a.status !== "done");
+  const acabando = products.filter((p) => p.stock <= p.min).length;
+
+  return (
+    <div className="bb-pulse">
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ color: C.brass, fontSize: 11, letterSpacing: 3.5, textTransform: "uppercase", fontWeight: 600 }}>Terça, 02 de junho</div>
+        <h2 style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 33, margin: "6px 0 0", color: C.ink, lineHeight: 1 }}>Bom dia, Barbearia Gerar</h2>
+      </div>
+
+      <div style={{ background: C.oxDark, color: "#F3F1EC", borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "22px 24px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.brass}, ${C.brassL})` }} />
+        <div>
+          <div style={{ fontSize: 11, letterSpacing: 2.5, textTransform: "uppercase", color: C.brassL, fontWeight: 600 }}>Faturamento de hoje</div>
+          <div style={{ fontFamily: MONO, fontWeight: 600, fontSize: 44, lineHeight: 1.15 }}>{money(fatur)}</div>
+          <div style={{ fontSize: 12.5, color: "rgba(245,234,215,.7)" }}>meta do dia {money(META)}</div>
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <Ring pct={metaPct} />
+          <div style={{ fontSize: 10, color: C.brassL, marginTop: 6, letterSpacing: 1.5, textTransform: "uppercase" }}>da meta</div>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+        <Tile onClick={() => goTo("whatsapp")} icon={MessageCircle} label="Clientes para retorno" value={returns.length} color={C.olive} />
+        <Tile onClick={() => goTo("estoque")} icon={Package} label="Produtos acabando" value={acabando} color={acabando ? C.brick : C.inkSoft} alert={acabando > 0} />
+      </div>
+
+      <div style={{ fontSize: 10.5, letterSpacing: 2.5, textTransform: "uppercase", color: C.brass, fontWeight: 600, marginBottom: 12 }}>Próximos da fila</div>
+      <div style={{ display: "grid", gap: 10 }}>
+        {proximos.length === 0 && <Muted>Sem atendimentos pendentes. Dia limpo!</Muted>}
+        {proximos.map((a) => {
+          const b = barberOf(a.barberId), s = serviceOf(a.serviceId);
+          return (
+            <button key={a.id} onClick={() => startService(a)} className="bb-card"
+              style={{ background: C.card, border: `1px solid ${C.line}`, borderLeft: `3px solid #3C4250`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "13px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", textAlign: "left", width: "100%", fontFamily: SANS }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <span style={{ fontFamily: MONO, fontWeight: 600, fontSize: 18, color: C.ox, minWidth: 48 }}>{a.time}</span>
+                <div>
+                  <div style={{ fontSize: 15, color: C.ink, fontWeight: 600, fontFamily: SERIF }}>{a.client}</div>
+                  <div style={{ fontSize: 12, color: C.inkSoft }}>{s.name} · {b.name}</div>
+                </div>
+              </div>
+              <ArrowRight size={16} color={C.ox} />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Ring({ pct, size = 72 }) {
+  const r = (size - 9) / 2, circ = 2 * Math.PI * r, off = circ * (1 - Math.min(1, pct / 100));
+  const cx = size / 2;
+  return (
+    <svg width={size} height={size}>
+      <g style={{ transform: `rotate(-90deg)`, transformOrigin: "center" }}>
+        <circle cx={cx} cy={cx} r={r} fill="none" stroke="rgba(255,255,255,.15)" strokeWidth="6" />
+        <circle cx={cx} cy={cx} r={r} fill="none" stroke="#BE8A2C" strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={off} style={{ transition: "stroke-dashoffset .6s" }} />
+      </g>
+      <text x={cx} y={cx} fill="#F3F1EC" fontFamily="'Courier Prime', monospace" fontSize="15" fontWeight="600" textAnchor="middle" dominantBaseline="central">{pct}%</text>
+    </svg>
+  );
+}
+
+function Tile({ onClick, icon: Icon, label, value, color, alert }) {
+  return (
+    <button onClick={onClick} className="bb-card"
+      style={{ background: C.card, border: `1px solid ${alert ? C.brick : C.line}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", textAlign: "left", width: "100%", fontFamily: SANS }}>
+      <div>
+        <div style={{ fontSize: 11.5, color: C.inkSoft, marginBottom: 6 }}>{label}</div>
+        <div style={{ fontFamily: MONO, fontWeight: 600, fontSize: 28, color }}>{value}</div>
+      </div>
+      <Icon size={22} color={color} />
+    </button>
+  );
+}
+
+function Painel() {
+  const conv = Math.round((SEED.aceitas / SEED.ofertas) * 100);
+  const upliftPct = Math.round((SEED.receitaProdutoSugerido / SEED.receitaServicos) * 100);
+  const ticketUpPct = Math.round(((SEED.ticketComProduto - SEED.ticketSemProduto) / SEED.ticketSemProduto) * 100);
+
+  return (
+    <div className="bb-pulse">
+      <SectionTitle kicker="Últimos 30 dias · Barbearia Gerar" title="Painel de ticket" />
+
+      {/* HERO — o número que vende */}
+      <div style={{ background: C.oxDark, color: "#F3F1EC", borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "26px 28px", marginBottom: 22, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.brass}, ${C.brassL})` }} />
+        <div style={{ fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color: C.brassL, fontWeight: 600 }}>As sugestões geraram, de verdade</div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 10, flexWrap: "wrap" }}>
+          <span style={{ fontFamily: MONO, fontWeight: 600, fontSize: 46, lineHeight: 1 }}>{money(SEED.receitaProdutoSugerido)}</span>
+          <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 22, color: C.brassL }}>+{upliftPct}% sobre o faturamento de serviços</span>
+        </div>
+        <div style={{ fontSize: 12.5, color: "rgba(245,234,215,.7)", marginTop: 12, maxWidth: 560 }}>
+          Esse é o número real da sua loja, não uma promessa: é a receita de produtos que entrou porque o sistema sugeriu no checkout — dinheiro que, no olho, costumava passar batido.
+        </div>
+      </div>
+
+      <Divulgar />
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+        <Panel title="Ticket médio: o efeito da sugestão">
+          <BarRow label="Atendimento só com serviço" value={SEED.ticketSemProduto} max={SEED.ticketComProduto} caption={money(SEED.ticketSemProduto)} color={C.line} />
+          <BarRow label="Com produto sugerido aceito" value={SEED.ticketComProduto} max={SEED.ticketComProduto} caption={money(SEED.ticketComProduto)} color={C.olive} />
+          <div style={{ fontSize: 12.5, color: C.inkSoft, marginTop: 10, fontStyle: "italic", fontFamily: SERIF }}>
+            Quando o cliente aceita, o ticket sobe <span style={{ color: C.ox, fontStyle: "normal", fontWeight: 600 }}>+{ticketUpPct}%</span>.
+          </div>
+        </Panel>
+
+        <Panel title="Conversão das sugestões">
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
+            <Target size={18} color={C.brass} />
+            <span style={{ fontFamily: MONO, fontWeight: 600, fontSize: 34, color: C.ink }}>{conv}%</span>
+          </div>
+          <div style={{ fontSize: 13, color: C.inkSoft, marginBottom: 14 }}>
+            Ofereceu <b style={{ color: C.ink, fontFamily: MONO }}>{SEED.ofertas}</b> · vendeu <b style={{ color: C.ink, fontFamily: MONO }}>{SEED.aceitas}</b>
+          </div>
+          <div style={{ height: 8, background: C.paper2, borderRadius: 6, overflow: "hidden" }}>
+            <div style={{ width: conv + "%", height: "100%", background: C.brass }} />
+          </div>
+          <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 12, fontStyle: "italic" }}>
+            Cada "não" também é registrado — é assim que você descobre o que treinar.
+          </div>
+        </Panel>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <Panel title="Quem mais vende na sugestão">
+          {SEED.barbeiros.map((b) => {
+            const c = Math.round((b.vendeu / b.ofertou) * 100);
+            const star = c >= 40;
+            return <BarRow key={b.nome} label={<span style={{ display: "flex", alignItems: "center", gap: 6 }}>{b.nome}{star && <Award size={13} color={C.brass} />}</span>}
+              value={c} max={50} caption={`${c}% (${b.vendeu}/${b.ofertou})`} color={star ? C.olive : C.brass} />;
+          })}
+          <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 8, fontStyle: "italic" }}>Ferramenta de treino: o Juliano converte menos da metade do Giovani.</div>
+        </Panel>
+
+        <Panel title="Produtos que mais convertem">
+          {SEED.produtos.map((p) => {
+            const c = Math.round((p.vendeu / p.ofertou) * 100);
+            return <BarRow key={p.nome} label={p.nome} value={c} max={50} caption={`${c}%`} color={C.brass} />;
+          })}
+          <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 8, fontStyle: "italic" }}>A pomada puxa o carro — vale priorizar na sugestão.</div>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+const BOOK_LINK = "phosphoros.app/studionavalha";
+
+function Divulgar() {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    try { navigator.clipboard?.writeText("https://" + BOOK_LINK); } catch (e) {}
+    setCopied(true); setTimeout(() => setCopied(false), 1600);
+  };
+  const share = () => window.open("https://wa.me/?text=" + encodeURIComponent("Agende seu horário na Barbearia Gerar: https://" + BOOK_LINK), "_blank");
+  const downloadQR = () => {
+    const svg = document.getElementById("qr-svg");
+    if (!svg) return;
+    const data = new XMLSerializer().serializeToString(svg);
+    const url = URL.createObjectURL(new Blob([data], { type: "image/svg+xml" }));
+    const a = document.createElement("a"); a.href = url; a.download = "qrcode-studio-navalha.svg"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20, marginBottom: 22, display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+      <div style={{ textAlign: "center" }}>
+        <QR text={"https://" + BOOK_LINK} />
+        <div style={{ fontSize: 9.5, color: C.inkSoft, marginTop: 6, fontStyle: "italic" }}>QR ilustrativo (demo)</div>
+      </div>
+      <div style={{ flex: 1, minWidth: 240 }}>
+        <div style={{ fontSize: 10.5, letterSpacing: 2.5, textTransform: "uppercase", color: C.brass, fontWeight: 600, display: "flex", alignItems: "center", gap: 7 }}>
+          <QrCode size={14} /> Divulgue sua barbearia
+        </div>
+        <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 18, color: C.ink, margin: "6px 0 4px" }}>Seu link de agendamento</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, background: C.paper, border: `1px solid ${C.line}`, borderRadius: 8, padding: "10px 12px", marginBottom: 12 }}>
+          <span style={{ fontFamily: MONO, fontSize: 13.5, color: C.ink, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{BOOK_LINK}</span>
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button onClick={copy} style={{ ...btnPrimary, background: copied ? C.olive : C.ox }}>
+            {copied ? <><Check size={15} /> Copiado!</> : <><Copy size={15} /> Copiar link</>}
+          </button>
+          <button onClick={downloadQR} style={btnGhost}><Download size={15} /> Baixar QR</button>
+          <button onClick={share} style={btnGhost}><MessageCircle size={15} /> WhatsApp</button>
+        </div>
+        <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 12, fontStyle: "italic" }}>
+          Cole o QR no espelho e no balcão, o link na bio do Instagram, e mande no zap. O cliente agenda sozinho, sem te interromper.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QR({ text, px = 132 }) {
+  const N = 25, cell = px / N;
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); }
+  const rnd = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1000) / 1000; };
+  const inFinder = (x, y) => {
+    const f = (ox, oy) => x >= ox && x < ox + 7 && y >= oy && y < oy + 7;
+    return f(0, 0) || f(N - 7, 0) || f(0, N - 7);
+  };
+  const rects = [];
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    if (inFinder(x, y)) continue;
+    if (rnd() > 0.52) rects.push(<rect key={x + "-" + y} x={x * cell} y={y * cell} width={cell} height={cell} fill={C.ink} />);
+  }
+  const finder = (ox, oy) => (
+    <g key={ox + "f" + oy}>
+      <rect x={ox * cell} y={oy * cell} width={7 * cell} height={7 * cell} fill={C.ink} />
+      <rect x={(ox + 1) * cell} y={(oy + 1) * cell} width={5 * cell} height={5 * cell} fill={C.card} />
+      <rect x={(ox + 2) * cell} y={(oy + 2) * cell} width={3 * cell} height={3 * cell} fill={C.ink} />
+    </g>
+  );
+  return (
+    <svg id="qr-svg" width={px} height={px} viewBox={`0 0 ${px} ${px}`} style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.line}`, padding: 6 }}>
+      {rects}
+      {finder(0, 0)}{finder(N - 7, 0)}{finder(0, N - 7)}
+    </svg>
+  );
+}
+
+function BarRow({ label, value, max, caption, color }) {
+  const pct = Math.max(3, Math.round((value / max) * 100));
+  return (
+    <div style={{ marginBottom: 13 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
+        <span style={{ color: C.ink }}>{label}</span>
+        <span style={{ fontFamily: MONO, color: C.ink, fontWeight: 600 }}>{caption}</span>
+      </div>
+      <div style={{ height: 8, background: C.paper2, borderRadius: 6, overflow: "hidden" }}>
+        <div style={{ width: pct + "%", height: "100%", background: color || C.brass, transition: "width .5s" }} />
+      </div>
+    </div>
+  );
+}
+
+const btnPrimary = { display: "flex", alignItems: "center", gap: 8, background: C.ox, color: "#fff", border: "none", borderRadius: 8, padding: "11px 18px", fontSize: 13.5, fontWeight: 600, cursor: "pointer" };
+const btnGhost = { display: "flex", alignItems: "center", gap: 7, background: "transparent", color: C.inkSoft, border: `1px solid ${C.line}`, borderRadius: 8, padding: "11px 16px", fontSize: 13, cursor: "pointer" };
+const chipBtn = { display: "flex", alignItems: "center", gap: 5, background: "transparent", border: "1px solid", borderRadius: 7, padding: "7px 11px", fontSize: 12.5, cursor: "pointer", fontWeight: 500 };
+const inputStyle = { background: C.paper, border: `1px solid ${C.line}`, borderRadius: 6, padding: "9px 11px", fontSize: 14, color: C.ink, fontFamily: SANS, outline: "none", width: "100%", boxSizing: "border-box" };
+
+const MV = {
+  entrada: { label: "Entrada / reposição", sign: "+", color: C.olive, badge: "ENTRADA" },
+  perda: { label: "Perda / quebra", sign: "−", color: C.brick, badge: "PERDA" },
+  ajuste: { label: "Contagem / ajuste", sign: "=", color: C.brass, badge: "AJUSTE" },
+  venda: { label: "Venda", sign: "−", color: C.ox, badge: "VENDA" },
+};
+
+function Produtos({ products, setProducts, movements, applyMovement, back }) {
+  const [editId, setEditId] = useState(null);
+  const [draft, setDraft] = useState(null);
+  const [qty, setQty] = useState({});
+  const [reason, setReason] = useState({});
+
+  const startEdit = (p) => { setEditId(p.id); setDraft({ ...p }); };
+  const startNew = () => { setEditId("new"); setDraft({ id: "p" + Date.now(), name: "", price: 0, cost: 0, stock: 0, min: 0, supplier: "", supplierPhone: "" }); };
+  const cancel = () => { setEditId(null); setDraft(null); };
+  const save = () => {
+    setProducts((prev) => {
+      const exists = prev.some((p) => p.id === draft.id);
+      const clean = { ...draft, price: +draft.price || 0, cost: +draft.cost || 0, stock: parseInt(draft.stock) || 0, min: parseInt(draft.min) || 0 };
+      return exists ? prev.map((p) => (p.id === draft.id ? clean : p)) : [...prev, clean];
+    });
+    cancel();
+  };
+  const registrar = (p) => {
+    const n = parseInt(qty[p.id]);
+    if (isNaN(n)) return;
+    applyMovement(p.id, reason[p.id] || "entrada", n);
+    setQty((q) => ({ ...q, [p.id]: "" }));
+  };
+
+  const field = (label, key, opts = {}) => (
+    <label style={{ display: "grid", gap: 5, fontSize: 10, color: C.inkSoft, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase" }}>
+      {label}
+      <input value={draft[key]} type={opts.type || "text"} placeholder={opts.ph || ""}
+        onChange={(e) => setDraft((d) => ({ ...d, [key]: e.target.value }))} style={inputStyle} />
+    </label>
+  );
+
+  const nameOf = (id) => (products.find((p) => p.id === id) || {}).name || "—";
+
+  return (
+    <div className="bb-pulse">
+      <SectionTitle kicker="Cadastro · onde a automação começa" title="Gerenciar produtos"
+        right={<button onClick={back} style={btnGhost}><ArrowLeft size={14} /> Voltar ao estoque</button>} />
+
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+        <button onClick={startNew} style={btnPrimary}><Plus size={16} /> Novo produto</button>
+      </div>
+
+      {editId === "new" && draft && <EditForm draft={draft} field={field} save={save} cancel={cancel} title="Novo produto" />}
+
+      <div style={{ display: "grid", gap: 12 }}>
+        {products.map((p) =>
+          editId === p.id && draft ? (
+            <EditForm key={p.id} draft={draft} field={field} save={save} cancel={cancel} title={`Editando: ${p.name}`} />
+          ) : (
+            <div key={p.id} style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "16px 20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+                <div style={{ minWidth: 160 }}>
+                  <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 16, color: C.ink }}>{p.name}</div>
+                  <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 3 }}>{p.supplier} · mín {p.min} un</div>
+                </div>
+                <div style={{ display: "flex", gap: 24 }}>
+                  <Stat label="preço" v={money(p.price)} />
+                  <Stat label="custo" v={money(p.cost)} />
+                  <Stat label="estoque" v={p.stock} strong color={p.stock <= p.min ? C.brick : C.ink} />
+                </div>
+                <button onClick={() => startEdit(p)} style={{ ...chipBtn, borderColor: C.line, color: C.ink, background: C.card }}><Pencil size={13} /> Editar</button>
+              </div>
+
+              {/* registrar movimento de estoque */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14, paddingTop: 14, borderTop: `1px dashed ${C.line}`, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 10.5, color: C.inkSoft, letterSpacing: 1, textTransform: "uppercase", fontWeight: 600 }}>Registrar movimento:</span>
+                <select value={reason[p.id] || "entrada"} onChange={(e) => setReason((r) => ({ ...r, [p.id]: e.target.value }))}
+                  style={{ ...inputStyle, width: "auto", padding: "8px 10px", cursor: "pointer" }}>
+                  <option value="entrada">Entrada / reposição</option>
+                  <option value="perda">Perda / quebra</option>
+                  <option value="ajuste">Contagem / ajuste</option>
+                </select>
+                <input value={qty[p.id] || ""} onChange={(e) => setQty((q) => ({ ...q, [p.id]: e.target.value }))}
+                  placeholder={(reason[p.id] || "entrada") === "ajuste" ? "novo total" : "qtd"} inputMode="numeric" style={{ ...inputStyle, width: 92 }} />
+                <button onClick={() => registrar(p)} style={{ ...chipBtn, borderColor: C.ox, color: C.ox, background: C.card }}>Registrar</button>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+
+      {/* histórico auditável — inventory_movements */}
+      <div style={{ marginTop: 26 }}>
+        <div style={{ fontSize: 10.5, letterSpacing: 2.5, textTransform: "uppercase", color: C.brass, fontWeight: 600, marginBottom: 12 }}>Histórico de movimentos</div>
+        {movements.length === 0 ? (
+          <Muted>Nenhum movimento ainda. Registre uma entrada, perda ou contagem acima — ou finalize uma venda no checkout.</Muted>
+        ) : (
+          <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", overflow: "hidden" }}>
+            {movements.slice(0, 12).map((m, i) => {
+              const meta = MV[m.type] || MV.entrada;
+              return (
+                <div key={m.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 16px", borderTop: i ? `1px solid ${C.lineSoft}` : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ fontSize: 8.5, padding: "3px 7px", borderRadius: 4, fontFamily: MONO, fontWeight: 600, letterSpacing: 0.5, color: meta.color, border: `1px solid ${meta.color}` }}>{meta.badge}</span>
+                    <span style={{ fontSize: 13.5, color: C.ink }}>{nameOf(m.productId)}</span>
+                  </div>
+                  <span style={{ fontFamily: MONO, fontSize: 14, color: meta.color, fontWeight: 600 }}>{meta.sign}{m.qty}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div style={{ marginTop: 14, fontSize: 11.5, color: C.inkSoft, border: `1px dashed ${C.line}`, borderRadius: 8, padding: "13px 15px", background: C.card }}>
+          Cada linha é um registro em inventory_movements. Com 3-5 barbeiros, esse rastro é o que revela perdas e some-some — e vira um relatório de perdas que justifica a mensalidade.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EditForm({ draft, field, save, cancel, title }) {
+  return (
+    <div style={{ background: C.card, border: `1px solid ${C.brass}`, borderTop: `3px solid ${C.brass}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20, marginBottom: 12 }}>
+      <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 17, color: C.ink, marginBottom: 16 }}>{title}</div>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
+        {field("Nome", "name")}
+        {field("Preço (R$)", "price", { type: "number", ph: "0,00" })}
+        {field("Custo (R$)", "cost", { type: "number" })}
+        {field("Estoque mín.", "min", { type: "number" })}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 12, marginBottom: 18 }}>
+        {field("Estoque atual", "stock", { type: "number", ph: "ex: 25" })}
+        {field("Fornecedor", "supplier")}
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <button onClick={save} style={btnPrimary}><Save size={15} /> Salvar</button>
+        <button onClick={cancel} style={btnGhost}>Cancelar</button>
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, v, strong, color }) {
+  return (
+    <div style={{ textAlign: "right" }}>
+      <div style={{ fontSize: 9, color: C.inkSoft, letterSpacing: 1, textTransform: "uppercase", fontFamily: SANS }}>{label}</div>
+      <div style={{ fontFamily: MONO, fontSize: strong ? 19 : 14, color: color || C.ink, fontWeight: strong ? 600 : 400, marginTop: 2 }}>{v}</div>
+    </div>
+  );
+}
+
+function Row({ k, v, muted, tag }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 13, color: muted ? C.inkSoft : C.ink }}>
+      <span style={{ display: "flex", alignItems: "center", gap: 7 }}>{k}{tag && <span style={{ fontSize: 8.5, padding: "2px 5px", borderRadius: 4, fontFamily: MONO, background: "rgba(44,114,216,.16)", color: C.brass }}>{tag}</span>}</span>
+      <span style={{ fontFamily: MONO }}>{v}</span>
+    </div>
+  );
+}
+function Kpi({ label, value, color, icon: Icon, sub, highlight }) {
+  return (
+    <div style={{ background: C.card, border: `1px solid ${highlight ? C.ox : C.line}`, borderTop: `3px solid ${color}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+        <span style={{ fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: C.inkSoft, fontWeight: 600 }}>{label}</span>
+        <Icon size={17} color={color} />
+      </div>
+      <div style={{ fontFamily: MONO, fontWeight: 600, fontSize: 30, color, lineHeight: 1 }}>{value}</div>
+      <div style={{ fontSize: 11, color: C.inkSoft, marginTop: 6, fontStyle: "italic" }}>{sub}</div>
+    </div>
+  );
+}
+function Panel({ title, children }) {
+  return (
+    <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20 }}>
+      <div style={{ fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: C.brass, marginBottom: 12, fontWeight: 600 }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+const Muted = ({ children }) => <div style={{ fontSize: 12.5, color: C.inkSoft, fontStyle: "italic" }}>{children}</div>;
+const Empty = ({ msg }) => <div style={{ padding: 40, textAlign: "center", color: C.inkSoft }}>{msg}</div>;
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(BarbeariaOS));
+</script>
+</body>
+</html>

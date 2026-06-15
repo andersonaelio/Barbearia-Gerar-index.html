@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Barbearia Gerar · Agendamento</title>
+<style>html,body{margin:0;padding:0}#root{min-height:100vh;font-family:sans-serif}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+</head>
+<body>
+<div id="root">Carregando…</div>
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+function I({size=16,color="currentColor",strokeWidth=2,style,children}){
+  return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={style}>{children}</svg>;
+}
+const Scissors=(p)=><I {...p}><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></I>;
+const Calendar=(p)=><I {...p}><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="3" x2="21" y1="10" y2="10"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="16" x2="16" y1="2" y2="6"/></I>;
+const ShoppingBag=(p)=><I {...p}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></I>;
+const Package=(p)=><I {...p}><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></I>;
+const Wallet=(p)=><I {...p}><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></I>;
+const MessageCircle=(p)=><I {...p}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></I>;
+const Check=(p)=><I {...p}><path d="M20 6 9 17l-5-5"/></I>;
+const X=(p)=><I {...p}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></I>;
+const Plus=(p)=><I {...p}><path d="M5 12h14"/><path d="M12 5v14"/></I>;
+const ArrowRight=(p)=><I {...p}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></I>;
+const AlertTriangle=(p)=><I {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></I>;
+const Phone=(p)=><I {...p}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></I>;
+const Clock=(p)=><I {...p}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></I>;
+const TrendingUp=(p)=><I {...p}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></I>;
+const User=(p)=><I {...p}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></I>;
+const Sparkles=(p)=><I {...p}><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/></I>;
+const ChevronRight=(p)=><I {...p}><path d="m9 18 6-6-6-6"/></I>;
+const Send=(p)=><I {...p}><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></I>;
+const RotateCcw=(p)=><I {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></I>;
+const DollarSign=(p)=><I {...p}><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></I>;
+const Pencil=(p)=><I {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></I>;
+const Save=(p)=><I {...p}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></I>;
+const ArrowLeft=(p)=><I {...p}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></I>;
+const BarChart3=(p)=><I {...p}><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></I>;
+const Target=(p)=><I {...p}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></I>;
+const Award=(p)=><I {...p}><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></I>;
+const Copy=(p)=><I {...p}><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></I>;
+const Download=(p)=><I {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></I>;
+const QrCode=(p)=><I {...p}><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></I>;
+const Sun=(p)=><I {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></I>;
+const CalendarClock=(p)=><I {...p}><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><circle cx="16" cy="16" r="6"/><path d="M16 14v2l1 1"/></I>;
+
+
+// ───────────────────────────────────────────────────────────
+// BarbeariaOS — Autoagendamento público (visão do cliente)
+// Só telefone · opt-in LGPD · lista de espera · confirmação WhatsApp
+// ───────────────────────────────────────────────────────────
+
+const FONT = `@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,600&family=Work+Sans:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap');`;
+const C = {
+  paper: "#15151A", paper2: "#2A2A33", card: "#1E1E25", ink: "#F3F1EC", inkSoft: "#9A9AA6",
+  line: "#33333E", lineSoft: "#26262E", ox: "#2C72D8", oxDark: "#101014",
+  brass: "#2C72D8", brassL: "#5A93E4", olive: "#4BC78E", brick: "#2C72D8",
+};
+const SANS = "'Work Sans', sans-serif", SERIF = "'Playfair Display', serif", MONO = "'Courier Prime', monospace";
+const money = (v) => "R$ " + v.toFixed(2).replace(".", ",");
+
+const SERVICES = [
+  { id: "degrade", name: "Degradê", price: 45, min: 45, grupo: "destaque" },
+  { id: "social", name: "Social (máquina e tesoura)", price: 40, min: 30, grupo: "destaque" },
+  { id: "tesoura", name: "Corte na tesoura", price: 45, min: 45, grupo: "destaque" },
+  { id: "maquina", name: "Corte máquina", price: 30, min: 30, grupo: "destaque" },
+  { id: "barba", name: "Barba", price: 35, min: 30, grupo: "destaque" },
+  { id: "sobrancelha", name: "Sobrancelha", price: 10, min: 15, grupo: "destaque" },
+  { id: "raspado", name: "Raspado na navalha", price: 30, min: 30, grupo: "mais" },
+  { id: "freestyle", name: "Corte + Freestyle", price: 55, min: 60, grupo: "mais" },
+  { id: "cera_orelha", name: "Cera na orelha", price: 15, min: 15, grupo: "mais" },
+  { id: "cera_nariz", name: "Cera no nariz", price: 15, min: 15, grupo: "mais" },
+  { id: "combo_cera", name: "Combo cera (ouvido e nariz)", price: 25, min: 30, grupo: "mais" },
+  { id: "limpeza", name: "Limpeza de pele", price: 25, min: 30, grupo: "mais" },
+  { id: "pigmentacao", name: "Pigmentação", price: 25, min: 30, grupo: "mais" },
+  { id: "luzes", name: "Luzes", price: 140, min: 60, grupo: "mais" },
+  { id: "platinado", name: "Platinado", price: 150, min: 60, grupo: "mais" },
+];
+const CUTS = ["degrade", "social", "tesoura", "maquina", "raspado", "freestyle"];
+const isCut = (id) => CUTS.includes(id);
+function totals(sel) {
+  const full = sel.reduce((a, s) => a + s.price, 0);
+  const min = sel.reduce((a, s) => a + s.min, 0);
+  const combo = sel.some((s) => isCut(s.id)) && sel.some((s) => s.id === "barba") && sel.some((s) => s.id === "sobrancelha");
+  const discount = combo ? 15 : 0;
+  return { price: full - discount, full, discount, min, combo };
+}
+const fmtMin = (m) => (m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? " " + (m % 60) + "min" : ""}` : `${m} min`);
+const BARBERS = [
+  { id: "any", name: "Sem preferência" },
+  { id: "b1", name: "Giovani Roque" },
+  { id: "b2", name: "Pedro Henrique" },
+  { id: "b3", name: "Bryan Roger" },
+  { id: "b4", name: "Cássio Miranda" },
+  { id: "b5", name: "Juliano Pastro" },
+];
+const DAYS = [
+  { key: "qua", label: "Qua", date: "04/06" },
+  { key: "qui", label: "Qui", date: "05/06" },
+  { key: "sex", label: "Sex", date: "06/06" },
+  { key: "sab", label: "Sáb", date: "07/06", full: true },
+  { key: "seg", label: "Seg", date: "09/06" },
+];
+const SLOTS = ["09:00", "09:45", "10:30", "11:15", "13:00", "13:45", "14:30", "15:15", "16:00", "16:45", "17:30"];
+
+function slotAvailable(day, barberId, idx) {
+  if (day.full) return false;
+  const b = barberId === "any" ? 1 : barberId.charCodeAt(1);
+  const seed = (day.key.charCodeAt(0) + b * 2 + idx * 3) % (barberId === "any" ? 4 : 5);
+  return !(seed === 0 || seed === 3);
+}
+
+const STEP_LABELS = ["Serviço", "Profissional", "Horário", "Seus dados", "Pagamento"];
+
+// ── Pagamento via Pix ──────────────────────────────────────
+// chave/nome/cidade são configuráveis pelo dono da barbearia
+const PAGAMENTO = {
+  ativo: true,
+  chave: "fa83a62a-fb37-4d41-8b96-51c9a9e5c56f", // chave Pix aleatória (teste)
+  nome: "BARBEARIA GERAR",
+  cidade: "FLORIANOPOLIS",
+  sinal: 15, // valor do sinal opcional, em R$
+  whatsapp: "5548988083166", // número da barbearia (configurável) — usado pra remarcação e contato
+};
+function crc16(s) {
+  let c = 0xffff;
+  for (let i = 0; i < s.length; i++) {
+    c ^= s.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) c = (c & 0x8000 ? (c << 1) ^ 0x1021 : c << 1) & 0xffff;
+  }
+  return c.toString(16).toUpperCase().padStart(4, "0");
+}
+function pixPayload({ chave, nome, cidade, valor, txid = "GERAR" }) {
+  const f = (id, v) => id + String(v.length).padStart(2, "0") + v;
+  const mai = f("26", f("00", "br.gov.bcb.pix") + f("01", chave));
+  const add = f("62", f("05", txid.slice(0, 25)));
+  let p =
+    f("00", "01") + mai + f("52", "0000") + f("53", "986") +
+    (valor ? f("54", valor.toFixed(2)) : "") + f("58", "BR") +
+    f("59", nome.slice(0, 25)) + f("60", cidade.slice(0, 15)) + add + "6304";
+  return p + crc16(p);
+}
+const qrURL = (payload) =>
+  "https://api.qrserver.com/v1/create-qr-code/?size=460x460&margin=0&data=" + encodeURIComponent(payload);
+
+function GerarMark({ size = 48 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 1024 1024" fill="none" style={{ display: "block" }}>
+      <g transform="translate(0,1024) scale(0.1,-0.1)">
+        <g fill="#ffffff"><path d="M6320 8524 c-181 -83 -259 -299 -173 -474 59 -119 143 -172 285 -178
+113 -5 174 16 251 87 134 123 140 358 14 490 -96 100 -255 132 -377 75z"/>
+<path d="M4774 8306 c-597 -142 -965 -693 -879 -1316 66 -474 416 -867 878
+-988 150 -40 472 -40 617 0 548 149 891 664 839 1260 -39 455 -298 817 -709
+990 -141 59 -206 70 -435 74 -194 3 -218 2 -311 -20z m361 -140 c134 -41 229
+-155 290 -349 204 -644 72 -1544 -243 -1651 -220 -75 -419 120 -506 497 -47
+201 -51 241 -51 527 0 302 9 385 67 590 82 294 253 443 443 386z"/>
+<path d="M5755 3030 c-4 -6 9 -28 29 -50 261 -289 200 -761 -130 -996 -270
+-193 -785 -205 -1074 -26 -226 140 -347 346 -421 712 -45 227 -154 335 -339
+335 -106 0 -151 -16 -213 -74 -84 -79 -102 -125 -102 -266 0 -115 2 -123 37
+-208 117 -281 315 -477 638 -631 262 -125 526 -179 860 -178 442 2 744 104
+966 326 155 155 215 280 222 462 7 188 -37 293 -178 428 -106 100 -276 196
+-295 166z"/></g>
+        <g fill="#2C72D8"><path d="M3819 4933 c-120 -125 -208 -272 -250 -418 -34 -116 -34 -346 0 -455
+76 -248 264 -451 548 -594 256 -128 426 -172 1053 -276 241 -40 431 -84 487
+-113 15 -8 62 -25 103 -38 81 -26 203 -92 257 -140 19 -16 38 -29 43 -29 5 0
+21 -17 35 -37 14 -21 39 -58 56 -83 120 -181 106 -440 -37 -652 -42 -61 -169
+-198 -184 -198 -4 0 -19 -11 -33 -24 -15 -14 -37 -31 -51 -38 -13 -7 -42 -23
+-65 -36 -23 -12 -39 -27 -36 -32 11 -18 51 -11 89 15 20 14 39 25 42 25 3 0
+22 8 42 17 172 79 416 323 511 511 216 425 106 1002 -241 1270 -254 196 -589
+300 -1328 412 -179 27 -228 36 -345 60 -233 50 -369 153 -404 306 -28 117 83
+265 229 305 94 26 90 52 -15 83 -84 26 -354 161 -390 197 -41 39 -41 39 -116
+-38z"/></g>
+        <g fill="#E5352B"><path d="M3896 6444 c-241 -241 -324 -409 -334 -677 -9 -257 59 -449 225 -641
+112 -128 303 -262 453 -316 19 -7 49 -18 65 -25 27 -12 51 -20 160 -55 110
+-34 311 -78 545 -119 642 -112 841 -163 921 -238 192 -180 171 -423 -46 -525
+-50 -23 -59 -37 -33 -49 7 -4 51 -25 98 -47 114 -54 227 -129 297 -197 31 -30
+60 -55 63 -55 24 0 173 196 222 295 212 418 106 897 -262 1189 -178 142 -317
+207 -670 310 -30 9 -82 21 -115 27 -33 6 -78 15 -100 19 -22 4 -67 13 -100 20
+-33 6 -80 15 -105 20 -25 4 -85 15 -135 24 -49 9 -108 20 -130 25 -22 5 -67
+15 -100 21 -214 41 -398 91 -506 137 -102 43 -107 47 -142 101 -112 174 -42
+347 170 422 47 16 63 27 63 41 0 18 -47 69 -63 69 -17 0 -217 208 -247 258
+-30 49 -55 72 -78 72 -6 0 -58 -48 -116 -106z"/></g>
+      </g>
+    </svg>
+  );
+}
+
+function PhosphorosMark({ size = 14, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="20 4 80 132" fill="none" style={{ display: "block" }}>
+      <path d="M28 40 Q60 14 92 40 Q60 66 28 40 Z" stroke={color} strokeWidth="6" strokeLinejoin="round" />
+      <circle cx="60" cy="40" r="10" fill={color} />
+      <rect x="32" y="84" width="56" height="9" rx="4.5" fill={color} />
+      <rect x="32" y="101" width="56" height="9" rx="4.5" fill={color} />
+      <rect x="32" y="118" width="56" height="9" rx="4.5" fill={color} />
+    </svg>
+  );
+}
+
+function Agendamento() {
+  const [step, setStep] = useState(1);
+  const [services, setServices] = useState([]);
+  const [barber, setBarber] = useState(null);
+  const [day, setDay] = useState(null);
+  const [time, setTime] = useState(null);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [optin, setOptin] = useState(true);
+  const [waitlist, setWaitlist] = useState(false);
+  const [payMethod, setPayMethod] = useState(null); // "pix" | "local"
+  const [payKind, setPayKind] = useState("total");   // "total" | "sinal"
+  const [copied, setCopied] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
+  const t = totals(services);
+  const serviceNames = services.map((s) => s.name).join(" + ");
+  const toggleService = (s) =>
+    setServices((prev) => (prev.some((x) => x.id === s.id) ? prev.filter((x) => x.id !== s.id) : [...prev, s]));
+
+  const slots = useMemo(() => {
+    if (!day || !barber) return [];
+    return SLOTS.map((t, i) => ({ time: t, available: slotAvailable(day, barber.id, i) }));
+  }, [day, barber]);
+  const dayHasSlots = slots.some((s) => s.available);
+
+  const payValue = payKind === "sinal" ? PAGAMENTO.sinal : t.price;
+  const pixCode = useMemo(
+    () => pixPayload({ chave: PAGAMENTO.chave, nome: PAGAMENTO.nome, cidade: PAGAMENTO.cidade, valor: payValue }),
+    [payValue]
+  );
+  const copyPix = () => {
+    try { navigator.clipboard.writeText(pixCode); } catch (e) {}
+    setCopied(true); setTimeout(() => setCopied(false), 1800);
+  };
+
+  const canNext =
+    (step === 1 && services.length > 0) || (step === 2 && barber) ||
+    (step === 3 && (time || (day && !dayHasSlots))) ||
+    (step === 4 && name.trim() && phone.replace(/\D/g, "").length >= 10);
+
+  const next = () => {
+    if (step === 3 && day && !dayHasSlots) { setWaitlist(true); setStep(6); return; }
+    if (step === 4) { setStep(PAGAMENTO.ativo ? 5 : 6); return; }
+    setStep((s) => Math.min(6, s + 1));
+  };
+  const back = () => setStep((s) => Math.max(1, s - 1));
+  const reset = () => { setStep(1); setServices([]); setBarber(null); setDay(null); setTime(null); setName(""); setPhone(""); setOptin(true); setWaitlist(false); setPayMethod(null); setPayKind("total"); setCopied(false); };
+
+  return (
+    <div style={{ background: "repeating-linear-gradient(90deg, rgba(255,255,255,.014) 0 1px, transparent 1px 7px), radial-gradient(1200px 620px at 50% -8%, #20202B 0%, #15151A 46%, #0E0E12 100%)", minHeight: "100vh", fontFamily: SANS, color: C.ink, display: "flex", justifyContent: "center", padding: "0 0 40px" }}>
+      <style>{FONT}</style>
+      <style>{`
+        .ag-pulse{animation:agp .4s cubic-bezier(.2,.7,.3,1) both}
+        @keyframes agp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        .ag-opt{transition:border-color .15s, background .15s, transform .12s}
+        .ag-opt:hover{border-color:${C.brass}}
+        .ag-opt:active{transform:scale(.99)}
+        input{font-family:${SANS}}
+      `}</style>
+
+      <div style={{ width: "100%", maxWidth: 460 }}>
+        {/* Storefront header */}
+        <div style={{ background: "#101014", color: "#F3F1EC", borderBottom: `1px solid ${C.line}`, padding: "24px 24px 20px", textAlign: "center" }}>
+          <div style={{ margin: "0 auto 8px", width: 56, height: 56 }}><GerarMark size={56} /></div>
+          <div style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 26, lineHeight: 1 }}>Barbearia Gerar</div>
+          <div style={{ fontSize: 10.5, color: "rgba(243,241,236,.55)", letterSpacing: 2.5, textTransform: "uppercase", marginTop: 7 }}>Agende seu horário</div>
+        </div>
+
+        {/* Progress */}
+        {step < 6 && (
+          <div style={{ display: "flex", gap: 6, padding: "16px 24px 0" }}>
+            {STEP_LABELS.slice(0, 5).map((l, i) => (
+              <div key={l} style={{ flex: 1 }}>
+                <div style={{ height: 4, borderRadius: 3, background: i + 1 <= step ? C.ox : C.paper2 }} />
+                <div style={{ fontSize: 9.5, color: i + 1 === step ? C.ox : C.inkSoft, marginTop: 5, fontWeight: i + 1 === step ? 600 : 400, letterSpacing: .5 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{ padding: "20px 24px" }}>
+          {/* STEP 1 — serviços (multi) */}
+          {step === 1 && (
+            <div className="ag-pulse">
+              <H>Seu melhor visual te espera</H>
+              <div style={{ fontSize: 12.5, color: C.inkSoft, margin: "-10px 0 16px" }}>Escolha quantos quiser — a gente cuida de tudo.</div>
+              <div style={{ display: "grid", gap: 10 }}>
+                {SERVICES.filter((s) => s.grupo === "destaque" || showMore).map((s) => {
+                  const sel = services.some((x) => x.id === s.id);
+                  return (
+                    <button key={s.id} className="ag-opt" onClick={() => toggleService(s)} style={optStyle(sel)}>
+                      <div>
+                        <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 16 }}>{s.name}</div>
+                        <div style={{ fontSize: 12, color: C.inkSoft, marginTop: 2, display: "flex", alignItems: "center", gap: 5 }}><Clock size={11} /> {fmtMin(s.min)}</div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontFamily: MONO, fontWeight: 700, fontSize: 14.5, color: C.ink, background: "rgba(255,255,255,.06)", border: `1px solid ${C.line}`, borderRadius: 8, padding: "4px 9px" }}>{money(s.price)}</span>
+                        <span style={{ width: 26, height: 26, borderRadius: "50%", display: "grid", placeItems: "center", background: sel ? C.ox : "transparent", border: `1.5px solid ${sel ? C.ox : C.line}`, color: sel ? "#fff" : C.inkSoft }}>
+                          {sel ? <Check size={15} /> : <Plus size={15} />}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button onClick={() => setShowMore((v) => !v)} style={{ marginTop: 10, width: "100%", background: "transparent", border: `1px dashed ${C.line}`, color: C.inkSoft, borderRadius: 10, padding: "11px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                {showMore ? "− ver menos" : "+ ver todos os serviços"}
+              </button>
+
+              {/* order-bump no agendamento: fechar o combo */}
+              {services.some((x) => isCut(x.id)) && !(services.some((x) => x.id === "barba") && services.some((x) => x.id === "sobrancelha")) && (
+                <button onClick={() => setServices((prev) => {
+                    const ids = new Set(prev.map((x) => x.id));
+                    const add = ["barba", "sobrancelha"].filter((id) => !ids.has(id)).map((id) => SERVICES.find((s) => s.id === id));
+                    return [...prev, ...add];
+                  })}
+                  style={{ marginTop: 12, width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, background: "rgba(43,114,216,.12)", border: `1px solid ${C.brass}`, borderRadius: 10, padding: "12px 14px", cursor: "pointer", textAlign: "left" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                    <Sparkles size={16} color={C.brassL} style={{ flexShrink: 0 }} />
+                    <span style={{ fontSize: 12.5, color: C.ink }}>Fecha o <b>combo</b> com Barba + Sobrancelha e economize {money(15)}</span>
+                  </span>
+                  <span style={{ display: "flex", alignItems: "center", gap: 4, color: C.brassL, fontWeight: 600, fontSize: 12.5, flexShrink: 0 }}><Plus size={14} /> Add</span>
+                </button>
+              )}
+
+              {services.length > 0 && (
+                <div style={{ marginTop: 16, background: C.card, border: `1px solid ${C.line}`, borderRadius: 10, padding: "13px 15px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontSize: 12, color: C.inkSoft }}>
+                    {services.length} serviço{services.length > 1 ? "s" : ""} · {fmtMin(t.min)}
+                    {t.combo && <span style={{ color: C.olive, marginLeft: 7, fontWeight: 600 }}>combo −{money(t.discount)}</span>}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                    {t.combo && <span style={{ fontFamily: MONO, fontSize: 13, color: C.inkSoft, textDecoration: "line-through" }}>{money(t.full)}</span>}
+                    <span style={{ fontFamily: MONO, fontWeight: 700, fontSize: 21, color: C.ink, background: "rgba(255,255,255,.07)", border: `1px solid ${C.line}`, borderRadius: 9, padding: "5px 12px" }}>{money(t.price)}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STEP 2 — barbeiro */}
+          {step === 2 && (
+            <div className="ag-pulse">
+              <H>Com quem?</H>
+              <div style={{ display: "grid", gap: 10 }}>
+                {BARBERS.map((b) => (
+                  <button key={b.id} className="ag-opt" onClick={() => setBarber(b)} style={optStyle(barber?.id === b.id)}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ width: 38, height: 38, borderRadius: "50%", background: b.id === "any" ? C.paper2 : C.oxDark, color: b.id === "any" ? C.inkSoft : C.brassL, display: "grid", placeItems: "center", fontFamily: SERIF, fontWeight: 600, fontSize: 15 }}>
+                        {b.id === "any" ? <User size={17} /> : b.name[0]}
+                      </div>
+                      <span style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 16 }}>{b.name}</span>
+                    </div>
+                    {barber?.id === b.id && <Check size={18} color={C.ox} />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3 — horário */}
+          {step === 3 && (
+            <div className="ag-pulse">
+              <H>Quando?</H>
+              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, marginBottom: 18 }}>
+                {DAYS.map((d) => (
+                  <button key={d.key} className="ag-opt" onClick={() => { setDay(d); setTime(null); }}
+                    style={{ flexShrink: 0, width: 64, padding: "10px 0", borderRadius: 10, border: `1px solid ${day?.key === d.key ? C.ox : C.line}`, background: day?.key === d.key ? C.ox : C.card, color: day?.key === d.key ? "#fff" : C.ink, cursor: "pointer", textAlign: "center" }}>
+                    <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, opacity: .8 }}>{d.label}</div>
+                    <div style={{ fontFamily: MONO, fontSize: 14, fontWeight: 600, marginTop: 3 }}>{d.date}</div>
+                  </button>
+                ))}
+              </div>
+
+              {!day && <Muted>Escolha um dia para ver os horários.</Muted>}
+
+              {day && dayHasSlots && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                  {slots.map((s) => (
+                    <button key={s.time} disabled={!s.available} onClick={() => setTime(s.time)}
+                      className={s.available ? "ag-opt" : ""}
+                      style={{ padding: "11px 0", borderRadius: 8, fontFamily: MONO, fontSize: 14, fontWeight: 600,
+                        border: `1px solid ${time === s.time ? C.ox : s.available ? C.line : C.lineSoft}`,
+                        background: time === s.time ? C.ox : s.available ? C.card : "transparent",
+                        color: time === s.time ? "#fff" : s.available ? C.ink : C.line,
+                        cursor: s.available ? "pointer" : "not-allowed",
+                        textDecoration: s.available ? "none" : "line-through" }}>
+                      {s.time}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {day && !dayHasSlots && (
+                <div style={{ background: C.card, border: `1px solid ${C.brass}`, borderRadius: 10, padding: 18, textAlign: "center" }}>
+                  <CalendarClock size={26} color={C.brass} style={{ margin: "0 auto 8px" }} />
+                  <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 17 }}>Dia lotado</div>
+                  <div style={{ fontSize: 13, color: C.inkSoft, margin: "6px 0 0" }}>
+                    {day.label} {day.date} não tem horário livre{barber?.id !== "any" ? ` com ${barber.name}` : ""}. Entre na lista de espera e a gente te avisa no WhatsApp se abrir vaga.
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STEP 4 — dados */}
+          {step === 4 && (
+            <div className="ag-pulse">
+              <H>Seus dados</H>
+              <div style={{ display: "grid", gap: 14 }}>
+                <Field label="Nome" icon={User}>
+                  <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Como te chamamos?" style={inputStyle} />
+                </Field>
+                <Field label="WhatsApp" icon={Phone}>
+                  <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(48) 9 9999-9999" inputMode="tel" style={inputStyle} />
+                </Field>
+                <label style={{ display: "flex", gap: 11, alignItems: "flex-start", cursor: "pointer", background: C.card, border: `1px solid ${optin ? C.olive : C.line}`, borderRadius: 10, padding: "13px 14px" }}>
+                  <span style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${optin ? C.olive : C.line}`, background: optin ? C.olive : "transparent", display: "grid", placeItems: "center", flexShrink: 0, marginTop: 1 }}>
+                    {optin && <Check size={13} color="#fff" />}
+                  </span>
+                  <input type="checkbox" checked={optin} onChange={(e) => setOptin(e.target.checked)} style={{ display: "none" }} />
+                  <span style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.5 }}>
+                    Aceito receber a confirmação e lembretes deste agendamento no WhatsApp. <span style={{ color: C.ink }}>Você pode cancelar quando quiser.</span>
+                  </span>
+                </label>
+                <div style={{ fontSize: 10.5, color: C.inkSoft, fontStyle: "italic" }}>Não pedimos senha nem cadastro — só seu telefone para confirmar.</div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 5 — pagamento (Pix) */}
+          {step === 5 && (
+            <div className="ag-pulse">
+              <H>Garanta seu horário</H>
+              <div style={{ fontSize: 13, color: C.inkSoft, lineHeight: 1.5, marginTop: -6, marginBottom: 16 }}>
+                Faça um Pix pra reservar — seu horário fica seguro e você não perde tempo no balcão.
+              </div>
+
+              <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, padding: 16, marginBottom: 14 }}>
+                <SumRow k="Serviço" v={serviceNames} />
+                <SumRow k="Quando" v={`${day?.label} ${day?.date} · ${time}`} />
+                <SumRow k="Total" v={t.combo ? `${money(t.price)} (combo)` : money(t.price)} last />
+              </div>
+
+              <div style={{ background: C.oxDark, borderRadius: 14, padding: "20px 16px", textAlign: "center", marginBottom: 12 }}>
+                <div style={{ background: "#fff", display: "inline-block", padding: 10, borderRadius: 12 }}>
+                  <img src={qrURL(pixCode)} alt="QR Code Pix" width={196} height={196} style={{ display: "block" }} />
+                </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, color: C.brassL, fontSize: 12.5, marginTop: 12 }}>
+                  <QrCode size={15} /> Escaneie no app do seu banco
+                </div>
+                <div style={{ fontFamily: MONO, fontSize: 20, color: "#F3E9D6", marginTop: 8, fontWeight: 700 }}>{money(payValue)}</div>
+              </div>
+
+              <button onClick={copyPix} className="ag-opt"
+                style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: C.card, border: `1px solid ${copied ? C.olive : C.line}`, borderRadius: 10, padding: "13px", fontSize: 13.5, fontWeight: 600, color: copied ? C.olive : C.ink, cursor: "pointer", marginBottom: 18 }}>
+                {copied ? <><Check size={15} /> Código Pix copiado!</> : <><Copy size={15} /> Copiar código Pix (copia e cola)</>}
+              </button>
+
+              <button onClick={() => { setPayMethod("pix"); setStep(6); }}
+                style={{ ...btnPrimary, width: "100%", boxSizing: "border-box", justifyContent: "center", padding: "14px", fontSize: 15 }}>
+                <Check size={16} /> Avisar que paguei
+              </button>
+              <div style={{ fontSize: 11.5, color: C.inkSoft, textAlign: "center", marginTop: 8, lineHeight: 1.5 }}>
+                A barbearia confere o Pix e te confirma no WhatsApp. Você não precisa fazer mais nada.
+              </div>
+              <button onClick={() => { setPayMethod("local"); setStep(6); }}
+                style={{ ...btnGhost, width: "100%", boxSizing: "border-box", justifyContent: "center", marginTop: 10 }}>
+                <Wallet size={15} /> Prefiro pagar no balcão
+              </button>
+              <button onClick={() => setStep(4)}
+                style={{ ...btnGhost, width: "100%", boxSizing: "border-box", justifyContent: "center", marginTop: 10, border: "none", color: C.inkSoft }}>
+                <ArrowLeft size={14} /> Voltar
+              </button>
+            </div>
+          )}
+
+          {/* STEP 6 — confirmação / lista de espera */}
+          {step === 6 && (
+            <div className="ag-pulse" style={{ textAlign: "center", padding: "10px 0" }}>
+              <div style={{ width: 60, height: 60, borderRadius: "50%", background: waitlist ? C.brass : C.olive, display: "grid", placeItems: "center", margin: "0 auto 16px" }}>
+                {waitlist ? <CalendarClock size={28} color="#fff" /> : <Check size={30} color="#fff" strokeWidth={2.4} />}
+              </div>
+              <div style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 26 }}>{waitlist ? "Você está na lista!" : "Agendado!"}</div>
+              <div style={{ fontSize: 13.5, color: C.inkSoft, margin: "8px auto 20px", maxWidth: 320, lineHeight: 1.5 }}>
+                {waitlist
+                  ? `Te avisamos no WhatsApp assim que abrir um horário em ${day?.label} ${day?.date}.`
+                  : payMethod === "pix"
+                  ? "Recebemos seu agendamento! Assim que a barbearia confirmar seu Pix, está fechado."
+                  : "Tudo certo, seu horário está reservado. O pagamento fica pra hora do atendimento."}
+              </div>
+
+              {!waitlist && (
+                <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, padding: 18, textAlign: "left", marginBottom: 16 }}>
+                  <SumRow k="Serviço" v={serviceNames} />
+                  <SumRow k="Profissional" v={barber?.id === "any" ? "Sem preferência" : barber?.name} />
+                  <SumRow k="Quando" v={`${day?.label} ${day?.date} · ${time}`} />
+                  <SumRow k="Valor" v={t.combo ? `${money(t.price)} (combo)` : money(t.price)} />
+                  <SumRow k="Pagamento" v={payMethod === "pix" ? `Pix de ${money(payValue)} (a confirmar)` : "Pagar no balcão"} last />
+                </div>
+              )}
+
+              {/* prévia do WhatsApp */}
+              {optin && (
+                <div style={{ background: "#E7F0E2", border: `1px solid ${C.olive}`, borderRadius: 12, padding: "14px 16px", textAlign: "left", display: "flex", gap: 11 }}>
+                  <MessageCircle size={20} color={C.olive} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <div style={{ fontSize: 10.5, color: C.olive, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Mensagem no WhatsApp</div>
+                    <div style={{ fontSize: 13, color: C.ink, lineHeight: 1.5 }}>
+                      {waitlist
+                        ? `Olá ${name.split(" ")[0] || "tudo bem"}! Você entrou na lista de espera da Barbearia Gerar para ${day?.label} ${day?.date}. Avisamos aqui se abrir vaga.`
+                        : `Olá ${name.split(" ")[0] || "tudo bem"}! Seu horário na Barbearia Gerar está confirmado: ${serviceNames} com ${barber?.id === "any" ? "nossa equipe" : barber?.name} em ${day?.label} ${day?.date} às ${time}. ${payMethod === "pix" ? `Recebemos seu aviso de Pix de ${money(payValue)} e confirmamos já já. ` : ""}Até lá!`}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!waitlist && (
+                <a href={`https://wa.me/${PAGAMENTO.whatsapp}?text=${encodeURIComponent(`Oi! Preciso remarcar meu horário${payMethod === "pix" ? " (já paguei)" : ""}: ${serviceNames} em ${day?.label} ${day?.date} às ${time}. Consigo outro dia?`)}`}
+                  target="_blank" rel="noreferrer"
+                  style={{ ...btnGhost, justifyContent: "center", textDecoration: "none", width: "100%", boxSizing: "border-box", marginTop: 16, borderColor: C.brass, color: C.brassL }}>
+                  <CalendarClock size={15} /> Preciso remarcar
+                </a>
+              )}
+              {!waitlist && payMethod === "pix" && (
+                <div style={{ fontSize: 11, color: C.inkSoft, textAlign: "center", marginTop: 7, lineHeight: 1.5 }}>
+                  Imprevisto? Seu pagamento vira crédito pra nova data.
+                </div>
+              )}
+
+              <button onClick={reset} style={{ ...btnGhost, margin: "16px auto 0" }}>Fazer outro agendamento</button>
+            </div>
+          )}
+        </div>
+
+        {/* Nav */}
+        {step < 5 && (
+          <div style={{ display: "flex", gap: 10, padding: "4px 24px 0" }}>
+            {step > 1 && <button onClick={back} style={btnGhost}><ArrowLeft size={15} /> Voltar</button>}
+            <button onClick={next} disabled={!canNext}
+              style={{ ...btnPrimary, flex: 1, justifyContent: "center", opacity: canNext ? 1 : 0.4, cursor: canNext ? "pointer" : "not-allowed" }}>
+              {step === 4 ? "Ir para o pagamento" : step === 3 && day && !dayHasSlots ? "Entrar na lista de espera" : "Continuar"}
+              {step < 4 && <ArrowRight size={15} />}
+            </button>
+          </div>
+        )}
+
+        {/* Onde fica */}
+        <div style={{ padding: "8px 20px 0" }}>
+          <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 14, padding: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: C.brassL, fontWeight: 600, marginBottom: 8 }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+              Onde fica
+            </div>
+            <div style={{ fontSize: 14, color: C.ink, lineHeight: 1.5, marginBottom: 14 }}>
+              Rua José Corrêa, 471 — Tapera<br />Florianópolis · SC
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <a href="https://www.google.com/maps/search/?api=1&query=Barbearia%20Gerar%2C%20R.%20Jos%C3%A9%20Corr%C3%AAa%2C%20471%2C%20Tapera%2C%20Florian%C3%B3polis%20-%20SC"
+                target="_blank" rel="noreferrer"
+                style={{ ...btnPrimary, flex: 1, justifyContent: "center", textDecoration: "none", fontSize: 13, padding: "12px 8px" }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
+                Ver no Google
+              </a>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=Barbearia%20Gerar%2C%20R.%20Jos%C3%A9%20Corr%C3%AAa%2C%20471%2C%20Tapera%2C%20Florian%C3%B3polis%20-%20SC"
+                target="_blank" rel="noreferrer"
+                style={{ ...btnGhost, flex: 1, justifyContent: "center", textDecoration: "none", fontSize: 13, padding: "12px 8px" }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2Z" /></svg>
+                Como chegar
+              </a>
+            </div>
+            <a href={`https://wa.me/${PAGAMENTO.whatsapp}`}
+              target="_blank" rel="noreferrer"
+              style={{ ...btnGhost, width: "100%", boxSizing: "border-box", justifyContent: "center", textDecoration: "none", fontSize: 13, padding: "11px", marginTop: 10, border: "none", color: C.inkSoft }}>
+              <Phone size={14} /> Chamar no WhatsApp · (48) 98808-3166
+            </a>
+          </div>
+        </div>
+
+        <div style={{ textAlign: "center", padding: "26px 24px 10px" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, color: C.inkSoft }}>
+            <PhosphorosMark size={15} color={C.ox} /> Agendamento por <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 600, color: C.ink }}>Phosphoros</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const optStyle = (sel) => ({
+  display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
+  background: sel ? "rgba(44,114,216,.16)" : C.card, border: `1px solid ${sel ? C.ox : C.line}`,
+  borderRadius: 12, padding: "14px 16px", cursor: "pointer", textAlign: "left", color: C.ink,
+});
+const inputStyle = { background: C.card, border: `1px solid ${C.line}`, borderRadius: 9, padding: "12px 13px", fontSize: 15, color: C.ink, outline: "none", width: "100%", boxSizing: "border-box" };
+const btnPrimary = { display: "flex", alignItems: "center", gap: 7, background: C.ox, color: "#fff", border: "none", borderRadius: 9, padding: "13px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer" };
+const btnGhost = { display: "flex", alignItems: "center", gap: 6, background: "transparent", color: C.inkSoft, border: `1px solid ${C.line}`, borderRadius: 9, padding: "13px 16px", fontSize: 13.5, cursor: "pointer" };
+
+function H({ children }) {
+  return <h2 style={{ fontFamily: SERIF, fontWeight: 900, fontSize: 24, margin: "0 0 16px", color: C.ink }}>{children}</h2>;
+}
+function Field({ label, icon: Icon, children }) {
+  return (
+    <label style={{ display: "grid", gap: 6 }}>
+      <span style={{ fontSize: 11, color: C.inkSoft, fontWeight: 600, letterSpacing: .8, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6 }}><Icon size={13} /> {label}</span>
+      {children}
+    </label>
+  );
+}
+function SumRow({ k, v, last }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20, padding: "11px 0", borderBottom: last ? "none" : `1px solid ${C.lineSoft}`, fontSize: 14 }}>
+      <span style={{ color: C.inkSoft, flexShrink: 0 }}>{k}</span>
+      <span style={{ color: C.ink, fontWeight: 500, fontFamily: k === "Valor" ? MONO : SANS, textAlign: "right", lineHeight: 1.55 }}>{v}</span>
+    </div>
+  );
+}
+const Muted = ({ children }) => <div style={{ fontSize: 13, color: C.inkSoft, fontStyle: "italic", padding: "10px 0" }}>{children}</div>;
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Agendamento));
+</script>
+</body>
+</html>
