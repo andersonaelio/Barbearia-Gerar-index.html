@@ -122,6 +122,7 @@ const initialReturns = [
 const money = (v) => "R$ " + v.toFixed(2).replace(".", ",");
 
 const STEPS = [
+  { key: "hoje", label: "Hoje", icon: Sun },
   { key: "agenda", label: "Agenda", icon: Calendar },
   { key: "checkout", label: "Checkout", icon: ShoppingBag },
   { key: "estoque", label: "Estoque", icon: Package },
@@ -199,6 +200,40 @@ function BarbeariaOS() {
   const [expenses] = useState([{ id: "e1", label: "Produtos de limpeza", value: 60 }]);
   const [pulse, setPulse] = useState([]);
   const [movements, setMovements] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [walkModal, setWalkModal] = useState(false);
+  const [saveModal, setSaveModal] = useState(false);
+  const [walkForm, setWalkForm] = useState({ name: "", phone: "" });
+
+  // ── captura de cliente (chave = WhatsApp, sem duplicado) ────────────────
+  const saveClient = (name, phone, saleId) => {
+    const norm = (phone || "").replace(/\D/g, "");
+    if (norm.length < 8) return;
+    setClients(prev => {
+      const exists = prev.find(c => c.phone.replace(/\D/g, "") === norm);
+      if (exists) return prev.map(c => c.phone.replace(/\D/g, "") === norm
+        ? { ...c, visits: c.visits + 1, lastSale: saleId, name: name || c.name } : c);
+      return [...prev, { id: "cli-" + Date.now(), name: name || "—", phone, visits: 1, lastSale: saleId, since: new Date().toLocaleDateString("pt-BR") }];
+    });
+  };
+
+  // ── abre checkout para walk-in (sem agendamento prévio) ─────────────────
+  const startWalkIn = (skipSave) => {
+    if (!skipSave) {
+      const norm = walkForm.phone.replace(/\D/g, "");
+      if (norm.length >= 8) saveClient(walkForm.name, walkForm.phone, null);
+    }
+    const fake = {
+      id: "walk-" + Date.now(), client: walkForm.name || "Cliente", phone: walkForm.phone,
+      barberId: null, serviceId: "s1",
+      time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+      status: "walkin", lastVisitDays: 0
+    };
+    setWalkForm({ name: "", phone: "" });
+    setWalkModal(false);
+    setActive(fake); setCart([]); setRefused([]);
+    setScreen("checkout");
+  };
 
   // registra um movimento de estoque e ajusta o saldo (inventory_movements)
   const applyMovement = (productId, type, qty, note) => {
@@ -280,6 +315,11 @@ function BarbeariaOS() {
 
     setActive({ ...active, finished: true, sale });
     setCart([]);
+    // abre modal salvar cliente se ainda não está no histórico
+    const norm = (active.phone || "").replace(/\D/g, "");
+    const jaExiste = norm.length >= 8 && clients.find(c => c.phone.replace(/\D/g, "") === norm);
+    if (!jaExiste) setSaveModal(true);
+    else if (norm.length >= 8) saveClient(active.client, active.phone, sale.id);
   };
 
   const fin = useMemo(() => {
@@ -346,9 +386,6 @@ function BarbeariaOS() {
                 </button>
               ))}
             </div>
-            <button onClick={() => setScreen("hoje")} style={{ display: "flex", alignItems: "center", gap: 6, background: screen === "hoje" ? "rgba(44,114,216,.22)" : "transparent", color: "#F3E9D6", border: `1px solid ${C.brassL}`, borderRadius: 7, padding: "7px 13px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
-              <Sun size={14} /> Hoje
-            </button>
             {role === "dono" && (
               <button onClick={() => setScreen("painel")} style={{ display: "flex", alignItems: "center", gap: 6, background: screen === "painel" ? "rgba(44,114,216,.22)" : "transparent", color: "#F3E9D6", border: `1px solid ${C.brassL}`, borderRadius: 7, padding: "7px 13px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
                 <BarChart3 size={14} /> Painel
@@ -373,7 +410,7 @@ function BarbeariaOS() {
       <div className="rwrap" style={{ maxWidth: 1040, margin: "0 auto", padding: "30px 24px 90px" }}>
         {screen === "hoje" && <Hoje appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} sales={sales} products={products} returns={returns} goTo={setScreen} />}
         {screen === "painel" && role === "dono" && <Painel />}
-        {screen === "agenda" && <Agenda appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} barbers={initialBarbers} assignBarber={assignBarber} />}
+        {screen === "agenda" && <Agenda appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} barbers={initialBarbers} assignBarber={assignBarber} onWalkIn={() => setWalkModal(true)} />}
         {screen === "checkout" && (
           <Checkout active={active} cart={cart} suggestions={suggestions} refused={refused}
             services={initialServices} addProduct={addProduct} addService={addService}
@@ -395,6 +432,77 @@ function BarbeariaOS() {
           </div>
         </div>
       </div>
+
+      {/* ── Modal: Cadastrar cliente (walk-in) ── */}
+      {walkModal && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.75)", display:"grid", placeItems:"center", zIndex:999, padding:20 }} onClick={() => setWalkModal(false)}>
+          <div onClick={e => e.stopPropagation()} style={{ background:C.card, border:`1px solid ${C.line}`, borderRadius:16, padding:"28px 24px", width:"100%", maxWidth:420, boxShadow:"0 32px 64px -16px rgba(0,0,0,.9)" }}>
+            <div style={{ fontFamily:SERIF, fontWeight:800, fontSize:22, color:C.ink, marginBottom:6 }}>Cadastrar cliente</div>
+            <div style={{ fontSize:12.5, color:C.inkSoft, marginBottom:20 }}>Pede o WhatsApp pra ele entrar no histórico. Nome é opcional.</div>
+            <div style={{ marginBottom:14 }}>
+              <div style={{ fontSize:11, color:C.inkSoft, fontWeight:600, letterSpacing:1.5, textTransform:"uppercase", marginBottom:6 }}>WhatsApp</div>
+              <input value={walkForm.phone} onChange={e => setWalkForm(f => ({...f, phone: e.target.value}))}
+                placeholder="(48) 99999-9999" maxLength={20}
+                style={{ width:"100%", background:"#0d0d11", border:`1px solid ${C.line}`, borderRadius:8, padding:"10px 13px", color:C.ink, fontSize:15, fontFamily:SANS, outline:"none", boxSizing:"border-box" }} />
+            </div>
+            <div style={{ marginBottom:22 }}>
+              <div style={{ fontSize:11, color:C.inkSoft, fontWeight:600, letterSpacing:1.5, textTransform:"uppercase", marginBottom:6 }}>Nome (opcional)</div>
+              <input value={walkForm.name} onChange={e => setWalkForm(f => ({...f, name: e.target.value}))}
+                placeholder="Como te chamamos?"
+                style={{ width:"100%", background:"#0d0d11", border:`1px solid ${C.line}`, borderRadius:8, padding:"10px 13px", color:C.ink, fontSize:15, fontFamily:SANS, outline:"none", boxSizing:"border-box" }} />
+            </div>
+            <div style={{ display:"flex", gap:10 }}>
+              <button onClick={startWalkIn} style={{ flex:1, ...btnPrimary, justifyContent:"center" }}>
+                <Check size={16} /> Salvar e abrir checkout
+              </button>
+              <button onClick={() => { setWalkForm({name:"",phone:""}); setWalkModal(false);
+                const fake = { id:"walk-"+Date.now(), client:"Cliente", phone:"", barberId:null, serviceId:"s1",
+                  time:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}), status:"walkin", lastVisitDays:0 };
+                setActive(fake); setCart([]); setRefused([]); setScreen("checkout");
+              }} style={{ ...btnGhost, padding:"10px 14px", fontSize:12 }}>
+                Pular
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Salvar cliente pós-venda ── */}
+      {saveModal && active && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.75)", display:"grid", placeItems:"center", zIndex:999, padding:20 }}>
+          <div style={{ background:C.card, border:`1px solid ${C.line}`, borderRadius:16, padding:"28px 24px", width:"100%", maxWidth:420, boxShadow:"0 32px 64px -16px rgba(0,0,0,.9)" }}>
+            <div style={{ fontSize:11, color:C.brassL, fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>Venda finalizada ✓</div>
+            <div style={{ fontFamily:SERIF, fontWeight:800, fontSize:22, color:C.ink, marginBottom:6 }}>Salvar cliente?</div>
+            <div style={{ fontSize:12.5, color:C.inkSoft, marginBottom:20 }}>Guarda o WhatsApp pra chamar de volta e construir o histórico.</div>
+            <div style={{ marginBottom:14 }}>
+              <div style={{ fontSize:11, color:C.inkSoft, fontWeight:600, letterSpacing:1.5, textTransform:"uppercase", marginBottom:6 }}>WhatsApp</div>
+              <input id="save-phone" defaultValue={active.phone || ""}
+                placeholder="(48) 99999-9999" maxLength={20}
+                style={{ width:"100%", background:"#0d0d11", border:`1px solid ${C.line}`, borderRadius:8, padding:"10px 13px", color:C.ink, fontSize:15, fontFamily:SANS, outline:"none", boxSizing:"border-box" }} />
+            </div>
+            <div style={{ marginBottom:22 }}>
+              <div style={{ fontSize:11, color:C.inkSoft, fontWeight:600, letterSpacing:1.5, textTransform:"uppercase", marginBottom:6 }}>Nome</div>
+              <input id="save-name" defaultValue={active.client || ""}
+                placeholder="Como te chamamos?"
+                style={{ width:"100%", background:"#0d0d11", border:`1px solid ${C.line}`, borderRadius:8, padding:"10px 13px", color:C.ink, fontSize:15, fontFamily:SANS, outline:"none", boxSizing:"border-box" }} />
+            </div>
+            <div style={{ display:"flex", gap:10 }}>
+              <button onClick={() => {
+                const ph = document.getElementById("save-phone").value;
+                const nm = document.getElementById("save-name").value;
+                if (ph.replace(/\D/g,"").length >= 8) saveClient(nm, ph, active.sale?.id);
+                setSaveModal(false);
+              }} style={{ flex:1, ...btnPrimary, justifyContent:"center" }}>
+                <Check size={16} /> Salvar
+              </button>
+              <button onClick={() => setSaveModal(false)} style={{ ...btnGhost, padding:"10px 14px", fontSize:12 }}>
+                Pular
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
@@ -442,13 +550,43 @@ function SectionTitle({ kicker, title, right, kickerColor = C.brass, barColor = 
   );
 }
 
-function Agenda({ appointments, barberOf, serviceOf, startService, barbers, assignBarber }) {
+function Agenda({ appointments, barberOf, serviceOf, startService, barbers, assignBarber, onWalkIn }) {
   const fila = appointments.filter((a) => !a.barberId && a.status !== "done");
   const assigned = appointments.filter((a) => a.barberId);
   return (
     <div className="bb-pulse">
-      <SectionTitle kicker="Hoje · Ter, 02 Jun" title="Agenda do dia"
+      <SectionTitle kicker="Semana atual" title="Agenda"
         right={<div style={{ fontSize: 12.5, color: C.inkSoft, fontStyle: "italic", fontFamily: SERIF }}>Toque em um cliente para iniciar o atendimento →</div>} />
+
+      {/* Seletor de dias da semana */}
+      <div style={{ display:"flex", gap:8, marginBottom:18, overflowX:"auto", paddingBottom:4 }}>
+        {[
+          { dia:"Seg", data:"01", n:2 },
+          { dia:"Ter", data:"02", n:5, hoje:true },
+          { dia:"Qua", data:"03", n:3 },
+          { dia:"Qui", data:"04", n:4 },
+          { dia:"Sex", data:"05", n:1 },
+          { dia:"Sáb", data:"06", n:6 },
+        ].map(d => (
+          <button key={d.dia} style={{
+            flex:"1 0 0", minWidth:52, padding:"10px 6px", borderRadius:10, cursor:"pointer",
+            background: d.hoje ? "rgba(44,114,216,.22)" : C.card,
+            border: `1px solid ${d.hoje ? "rgba(44,114,216,.5)" : C.line}`,
+            color: d.hoje ? "#5b8cff" : C.inkSoft, textAlign:"center", fontFamily:SANS
+          }}>
+            <div style={{ fontSize:10, fontWeight:700, letterSpacing:1.5, textTransform:"uppercase", marginBottom:4 }}>{d.dia}</div>
+            <div style={{ fontSize:20, fontWeight:800, fontFamily:MONO, lineHeight:1 }}>{d.data}</div>
+            <div style={{ fontSize:10, marginTop:5, color: d.hoje ? "#5b8cff" : C.inkSoft }}>
+              {d.hoje ? "● hoje" : `${d.n} agend.`}
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Botão Cadastrar cliente — destaque */}
+      <button onClick={onWalkIn} style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:9, width:"100%", background:"rgba(44,114,216,.18)", color:"#5b8cff", border:"1px solid rgba(44,114,216,.4)", borderRadius:12, padding:"14px 20px", fontSize:15, fontWeight:700, cursor:"pointer", marginBottom:18, fontFamily:SANS, letterSpacing:0.3 }}>
+        <User size={17} /> + Cadastrar cliente
+      </button>
 
       {/* Fila de disponíveis — sem barbeiro */}
       <div style={{ marginBottom: 18, border: `1px solid ${fila.length ? GERAR_RED : C.line}`, background: fila.length ? "rgba(229,53,43,.07)" : C.card, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "15px 18px", transition: "all .2s" }}>
