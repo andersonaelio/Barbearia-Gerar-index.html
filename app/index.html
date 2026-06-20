@@ -90,13 +90,22 @@ const initialBarbers = [
 ];
 
 const initialServices = [
-  { id: "s1", name: "Degradê", price: 45 },
-  { id: "s2", name: "Social", price: 40 },
-  { id: "s3", name: "Corte na tesoura", price: 45 },
-  { id: "s4", name: "Corte máquina", price: 30 },
-  { id: "s5", name: "Barba", price: 35 },
-  { id: "s6", name: "Sobrancelha", price: 10 },
-  { id: "s7", name: "Degradê + Barba + Sobra.", price: 75 },
+  { id: "s1", name: "Degradê", price: 45, duration: 45 },
+  { id: "s2", name: "Social (máquina e tesoura)", price: 40, duration: 30 },
+  { id: "s3", name: "Corte na tesoura", price: 45, duration: 45 },
+  { id: "s4", name: "Corte máquina", price: 30, duration: 30 },
+  { id: "s5", name: "Barba", price: 35, duration: 30 },
+  { id: "s6", name: "Sobrancelha", price: 10, duration: 15 },
+  { id: "s7", name: "Degradê + Barba + Sobra.", price: 75, duration: 60 },
+  { id: "s8", name: "Raspado na navalha", price: 30, duration: 30 },
+  { id: "s9", name: "Corte + Freestyle", price: 55, duration: 60 },
+  { id: "s10", name: "Cera na orelha", price: 15, duration: 15 },
+  { id: "s11", name: "Cera no nariz", price: 15, duration: 15 },
+  { id: "s12", name: "Combo cera (ouvido e nariz)", price: 25, duration: 30 },
+  { id: "s13", name: "Limpeza de pele", price: 25, duration: 30 },
+  { id: "s14", name: "Pigmentação", price: 25, duration: 30 },
+  { id: "s15", name: "Luzes", price: 140, duration: 60 },
+  { id: "s16", name: "Platinado", price: 150, duration: 60 },
 ];
 
 const initialProducts = [
@@ -124,6 +133,7 @@ const money = (v) => "R$ " + v.toFixed(2).replace(".", ",");
 const STEPS = [
   { key: "hoje", label: "Hoje", icon: Sun },
   { key: "agenda", label: "Agenda", icon: Calendar },
+  { key: "servicos", label: "Serviços", icon: Scissors },
   { key: "checkout", label: "Checkout", icon: ShoppingBag },
   { key: "estoque", label: "Estoque", icon: Package },
   { key: "financeiro", label: "Financeiro", icon: Wallet },
@@ -189,6 +199,7 @@ function BarbeariaOS() {
   const [role, setRole] = useState("dono"); // "dono" vê tudo · "barbeiro" não vê Painel nem Financeiro
   const setRoleSafe = (r) => { setRole(r); if (r === "barbeiro" && (screen === "painel" || screen === "financeiro")) setScreen("hoje"); };
   const [products, setProducts] = useState(initialProducts);
+  const [services, setServices] = useState(initialServices);
   const [appointments, setAppointments] = useState(initialAppointments);
   const [returns, setReturns] = useState(initialReturns);
 
@@ -253,7 +264,7 @@ function BarbeariaOS() {
   const barberOf = (id) => initialBarbers.find((b) => b.id === id) || { id: null, name: "Sem preferência", commission: 0 };
   const assignBarber = (id, barberId) => setAppointments((a) => a.map((x) => (x.id === id ? { ...x, barberId } : x)));
   const unassignedCount = appointments.filter((a) => !a.barberId && a.status !== "done").length;
-  const serviceOf = (id) => initialServices.find((s) => s.id === id);
+  const serviceOf = (id) => services.find((s) => s.id === id);
 
   const startService = (appt) => {
     const svc = serviceOf(appt.serviceId);
@@ -410,10 +421,10 @@ function BarbeariaOS() {
       <div className="rwrap" style={{ maxWidth: 1040, margin: "0 auto", padding: "30px 24px 90px" }}>
         {screen === "hoje" && <Hoje appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} sales={sales} products={products} returns={returns} goTo={setScreen} />}
         {screen === "painel" && role === "dono" && <Painel />}
-        {screen === "agenda" && <Agenda appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} barbers={initialBarbers} assignBarber={assignBarber} onWalkIn={() => setWalkModal(true)} />}
+        {screen === "agenda" && <Agenda appointments={appointments} barberOf={barberOf} serviceOf={serviceOf} startService={startService} barbers={initialBarbers} assignBarber={assignBarber} onWalkIn={() => setWalkModal(true)} goServicos={() => setScreen("servicos")} />}
         {screen === "checkout" && (
           <Checkout active={active} cart={cart} suggestions={suggestions} refused={refused}
-            services={initialServices} addProduct={addProduct} addService={addService}
+            services={services} addProduct={addProduct} addService={addService}
             removeFromCart={removeFromCart} refuse={refuse} cartTotal={cartTotal}
             productCount={productCount} finalizeSale={finalizeSale} pulse={pulse}
             goNext={() => setScreen("estoque")} barberOf={barberOf}
@@ -421,6 +432,7 @@ function BarbeariaOS() {
         )}
         {screen === "estoque" && <Estoque products={products} goManage={() => setScreen("produtos")} />}
         {screen === "produtos" && <Produtos products={products} setProducts={setProducts} movements={movements} applyMovement={applyMovement} back={() => setScreen("estoque")} />}
+        {screen === "servicos" && <Servicos services={services} setServices={setServices} back={() => setScreen("agenda")} />}
         {screen === "financeiro" && role === "dono" && <Financeiro fin={fin} sales={sales} expenses={expenses} />}
         {screen === "whatsapp" && <Whatsapp returns={returns} setReturns={setReturns} />}
       </div>
@@ -550,7 +562,7 @@ function SectionTitle({ kicker, title, right, kickerColor = C.brass, barColor = 
   );
 }
 
-function Agenda({ appointments, barberOf, serviceOf, startService, barbers, assignBarber, onWalkIn }) {
+function Agenda({ appointments, barberOf, serviceOf, startService, barbers, assignBarber, onWalkIn, goServicos }) {
   const fila = appointments.filter((a) => !a.barberId && a.status !== "done");
   const assigned = appointments.filter((a) => a.barberId);
   return (
@@ -584,9 +596,14 @@ function Agenda({ appointments, barberOf, serviceOf, startService, barbers, assi
       </div>
 
       {/* Botão Cadastrar cliente — destaque */}
-      <button onClick={onWalkIn} style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:9, width:"100%", background:"rgba(44,114,216,.18)", color:"#5b8cff", border:"1px solid rgba(44,114,216,.4)", borderRadius:12, padding:"14px 20px", fontSize:15, fontWeight:700, cursor:"pointer", marginBottom:18, fontFamily:SANS, letterSpacing:0.3 }}>
+      <button onClick={onWalkIn} style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:9, width:"100%", background:"rgba(44,114,216,.18)", color:"#5b8cff", border:"1px solid rgba(44,114,216,.4)", borderRadius:12, padding:"14px 20px", fontSize:15, fontWeight:700, cursor:"pointer", marginBottom:10, fontFamily:SANS, letterSpacing:0.3 }}>
         <User size={17} /> + Cadastrar cliente
       </button>
+
+      {/* Gerenciar serviços */}
+      <div style={{ display:"flex", justifyContent:"flex-end", marginBottom:18 }}>
+        <button onClick={goServicos} style={btnGhost}><Pencil size={14} /> Gerenciar serviços</button>
+      </div>
 
       {/* Fila de disponíveis — sem barbeiro */}
       <div style={{ marginBottom: 18, border: `1px solid ${fila.length ? GERAR_RED : C.line}`, background: fila.length ? "rgba(229,53,43,.07)" : C.card, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "15px 18px", transition: "all .2s" }}>
@@ -1275,6 +1292,97 @@ function Produtos({ products, setProducts, movements, applyMovement, back }) {
         <div style={{ marginTop: 14, fontSize: 11.5, color: C.inkSoft, border: `1px dashed ${C.line}`, borderRadius: 8, padding: "13px 15px", background: C.card }}>
           Cada linha é um registro em inventory_movements. Com 3-5 barbeiros, esse rastro é o que revela perdas e some-some — e vira um relatório de perdas que justifica a mensalidade.
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Gerenciar Serviços ──────────────────────────────────────────────────
+function Servicos({ services, setServices, back }) {
+  const [editId, setEditId] = useState(null);
+  const [draft, setDraft] = useState(null);
+
+  const startEdit = (s) => { setEditId(s.id); setDraft({ ...s }); };
+  const startNew = () => { setEditId("new"); setDraft({ id: "", name: "", price: 0, duration: 30 }); };
+  const cancel = () => { setEditId(null); setDraft(null); };
+  const save = () => {
+    if (!draft.name) return;
+    if (editId === "new") {
+      setServices(prev => [...prev, { ...draft, id: "s" + Date.now(), price: Number(draft.price), duration: Number(draft.duration) }]);
+    } else {
+      setServices(prev => prev.map(s => s.id === editId ? { ...draft, price: Number(draft.price), duration: Number(draft.duration) } : s));
+    }
+    cancel();
+  };
+  const remove = (id) => { setServices(prev => prev.filter(s => s.id !== id)); };
+
+  const field = (label, key, opts = {}) => (
+    <label style={{ display: "grid", gap: 5, fontSize: 10, color: C.inkSoft, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase" }}>
+      {label}
+      <input value={draft[key]} type={opts.type || "text"} placeholder={opts.ph || ""}
+        onChange={(e) => setDraft(d => ({ ...d, [key]: e.target.value }))} style={inputStyle} />
+    </label>
+  );
+
+  return (
+    <div className="bb-pulse">
+      <SectionTitle kicker="Cadastro · seus serviços" title="Gerenciar serviços"
+        right={<button onClick={back} style={btnGhost}><ArrowLeft size={14} /> Voltar à agenda</button>} />
+
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+        <button onClick={startNew} style={btnPrimary}><Plus size={16} /> Novo serviço</button>
+      </div>
+
+      {editId === "new" && draft && (
+        <div style={{ background: C.card, border: `1px solid ${C.brass}`, borderTop: `3px solid ${C.brass}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20, marginBottom: 12 }}>
+          <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 17, color: C.ink, marginBottom: 16 }}>Novo serviço</div>
+          <div className="rg" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 12, marginBottom: 18 }}>
+            {field("Nome", "name", { ph: "Ex: Platinado" })}
+            {field("Preço (R$)", "price", { type: "number", ph: "0" })}
+            {field("Duração (min)", "duration", { type: "number", ph: "30" })}
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={save} style={btnPrimary}><Save size={15} /> Salvar</button>
+            <button onClick={cancel} style={btnGhost}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: "grid", gap: 12 }}>
+        {services.map(s =>
+          editId === s.id && draft ? (
+            <div key={s.id} style={{ background: C.card, border: `1px solid ${C.brass}`, borderTop: `3px solid ${C.brass}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: 20 }}>
+              <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 17, color: C.ink, marginBottom: 16 }}>Editando: {s.name}</div>
+              <div className="rg" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 12, marginBottom: 18 }}>
+                {field("Nome", "name")}
+                {field("Preço (R$)", "price", { type: "number" })}
+                {field("Duração (min)", "duration", { type: "number" })}
+              </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                <button onClick={save} style={btnPrimary}><Save size={15} /> Salvar</button>
+                <button onClick={cancel} style={btnGhost}>Cancelar</button>
+              </div>
+            </div>
+          ) : (
+            <div key={s.id} style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 12, boxShadow: "0 16px 34px -16px rgba(0,0,0,.85)", padding: "16px 20px" }}>
+              <div className="rwrapflex" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14 }}>
+                <div style={{ minWidth: 160 }}>
+                  <div style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 16, color: C.ink }}>{s.name}</div>
+                  <div style={{ fontSize: 11.5, color: C.inkSoft, marginTop: 3 }}>⏱ {s.duration || 30} min</div>
+                </div>
+                <div style={{ fontFamily: MONO, fontSize: 18, fontWeight: 600, color: C.ink }}>{money(s.price)}</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => startEdit(s)} style={{ ...chipBtn, borderColor: C.line, color: C.ink, background: C.card }}><Pencil size={13} /> Editar</button>
+                  <button onClick={() => remove(s.id)} style={{ ...chipBtn, borderColor: "rgba(229,53,43,.4)", color: GERAR_RED, background: C.card }}>✕</button>
+                </div>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+
+      <div style={{ marginTop: 18, fontSize: 11.5, color: C.inkSoft, border: `1px dashed ${C.line}`, borderRadius: 8, padding: "13px 15px", background: C.card }}>
+        Adicione, edite ou remova serviços. As mudanças aparecem automaticamente no agendamento online e no checkout.
       </div>
     </div>
   );
